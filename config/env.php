@@ -1,4 +1,4 @@
-`   <?php
+<?php
 // Carregador de variáveis de ambiente
 class Env {
     public static function load($path = '.env') {
