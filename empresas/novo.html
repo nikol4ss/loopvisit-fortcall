@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA EMPRESA - SISTEMA DE VISITAS</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1>NOVA EMPRESA</h1>
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn-secondary">SAIR</button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="app-nav">
+            <a href="../dashboard.html" class="nav-link">DASHBOARD</a>
+            <a href="../empresas.html" class="nav-link active">EMPRESAS</a>
+            <a href="../visitas.html" class="nav-link">VISITAS</a>
+            <a href="../relatorios.html" class="nav-link" id="relatoriosLink" style="display: none;">RELATÓRIOS</a>
+        </nav>
+
+        <main class="app-main">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>CADASTRAR NOVA EMPRESA</h2>
+                    <a href="../empresas.html" class="btn-secondary">VOLTAR</a>
+                </div>
+
+                <form id="empresaForm" class="form-content">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">NOME DA EMPRESA *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cnpj">CNPJ *</label>
+                            <input type="text" id="cnpj" name="cnpj" required placeholder="00.000.000/0000-00" maxlength="18">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="segment">SEGMENTO *</label>
+                            <select id="segment" name="segment" required>
+                                <option value="">SELECIONE O SEGMENTO</option>
+                                <option value="APARAS">APARAS</option>
+                                <option value="BRITAGEM">BRITAGEM</option>
+                                <option value="CIMENTEIRA">CIMENTEIRA</option>
+                                <option value="CIMENTOS">CIMENTOS</option>
+                                <option value="CIVIL E AMBIENTAL">CIVIL E AMBIENTAL</option>
+                                <option value="COMPRA DE PEÇAS">COMPRA DE PEÇAS</option>
+                                <option value="CONCESSIONARIA">CONCESSIONARIA</option>
+                                <option value="CONSTRUÇÃO">CONSTRUÇÃO</option>
+                                <option value="CONSTRUTORA">CONSTRUTORA</option>
+                                <option value="COOPERATIVA">COOPERATIVA</option>
+                                <option value="DEMOLIÇÃO">DEMOLIÇÃO</option>
+                                <option value="DESTILARIA">DESTILARIA</option>
+                                <option value="ENGENHARIA">ENGENHARIA</option>
+                                <option value="EXPORTAÇÃO">EXPORTAÇÃO</option>
+                                <option value="FABRICA">FABRICA</option>
+                                <option value="FERROVIAS">FERROVIAS</option>
+                                <option value="FERTILIZANTES">FERTILIZANTES</option>
+                                <option value="FLORESTAL">FLORESTAL</option>
+                                <option value="FUNDIÇÃO">FUNDIÇÃO</option>
+                                <option value="INDUSTRIA">INDUSTRIA</option>
+                                <option value="LOCADOR">LOCADOR</option>
+                                <option value="LOCADORA">LOCADORA</option>
+                                <option value="MANUTENÇÃO MAQUINAS">MANUTENÇÃO MAQUINAS</option>
+                                <option value="MARMORES E GRANITOS">MARMORES E GRANITOS</option>
+                                <option value="METARLUGICA">METARLUGICA</option>
+                                <option value="MINERAÇAO">MINERAÇAO</option>
+                                <option value="MINERADORA">MINERADORA</option>
+                                <option value="PEDREIRA">PEDREIRA</option>
+                                <option value="PRESTADOR SERVIÇO">PRESTADOR SERVIÇO</option>
+                                <option value="RECICLAGEM">RECICLAGEM</option>
+                                <option value="RESÍDUOS">RESÍDUOS</option>
+                                <option value="REVENDA">REVENDA</option>
+                                <option value="SIDERURGIA">SIDERURGIA</option>
+                                <option value="SUCATAS">SUCATAS</option>
+                                <option value="SUCATEIRO">SUCATEIRO</option>
+                                <option value="SUCROALCOOLEIRO">SUCROALCOOLEIRO</option>
+                                <option value="TERRAPLANAGEM">TERRAPLANAGEM</option>
+                                <option value="TRANSPORTADORA">TRANSPORTADORA</option>
+                                <option value="USINA">USINA</option>
+                                <option value="VENDA DE MÁQUINAS">VENDA DE MÁQUINAS</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sector">SETOR</label>
+                            <input type="text" id="sector" name="sector" placeholder="EX: INDUSTRIAL, COMERCIAL">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">ENDEREÇO *</label>
+                            <input type="text" id="address" name="address" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="state_id">ESTADO *</label>
+                            <select id="state_id" name="state_id" required>
+                                <option value="">SELECIONE O ESTADO</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city_id">CIDADE *</label>
+                            <select id="city_id" name="city_id" required>
+                                <option value="">SELECIONE A CIDADE</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="region">REGIÃO *</label>
+                            <select id="region" name="region" required>
+                                <option value="">SELECIONE A REGIÃO</option>
+                                <option value="NORTE">NORTE</option>
+                                <option value="NORDESTE">NORDESTE</option>
+                                <option value="CENTRO-OESTE">CENTRO-OESTE</option>
+                                <option value="SUDESTE">SUDESTE</option>
+                                <option value="SUL">SUL</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">TELEFONE</label>
+                            <input type="tel" id="phone" name="phone" placeholder="(11) 1234-5678" maxlength="15">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="whatsapp">WHATSAPP</label>
+                            <input type="tel" id="whatsapp" name="whatsapp" placeholder="(11) 91234-5678" maxlength="15">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">EMAIL</label>
+                            <input type="email" id="email" name="email" placeholder="exemplo@empresa.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="responsible">RESPONSÁVEL</label>
+                            <input type="text" id="responsible" name="responsible" placeholder="NOME DO CONTATO">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="consultant">CONSULTOR PRINCIPAL *</label>
+                            <select id="consultant" name="consultant" required>
+                                <option value="">SELECIONE O CONSULTOR PRINCIPAL</option>
+                            </select>
+                        </div>
+
+                        <!-- NOVO CAMPO: CONSULTOR SECUNDÁRIO -->
+                        <div class="form-group">
+                            <label for="consultant_secondary">CONSULTOR SECUNDÁRIO</label>
+                            <select id="consultant_secondary" name="consultant_secondary">
+                                <option value="">SELECIONE O CONSULTOR SECUNDÁRIO (OPCIONAL)</option>
+                            </select>
+                            <small class="form-help">Consultor que pode atender na ausência do principal</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rating">AVALIAÇÃO</label>
+                            <select id="rating" name="rating">
+                                <option value="">SEM AVALIAÇÃO</option>
+                                <option value="1">1 ESTRELA</option>
+                                <option value="2">2 ESTRELAS</option>
+                                <option value="3">3 ESTRELAS</option>
+                                <option value="4">4 ESTRELAS</option>
+                                <option value="5">5 ESTRELAS</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status">STATUS *</label>
+                            <select id="status" name="status" required>
+                                <option value="ATIVA">ATIVA</option>
+                                <option value="INATIVA">INATIVA</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" onclick="window.location.href='../empresas.html'" class="btn-secondary">CANCELAR</button>
+                        <button type="submit" class="btn-primary">SALVAR EMPRESA</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/empresa-form-novo.js"></script>
+</body>
+</html>

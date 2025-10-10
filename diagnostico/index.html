@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIAGNÓSTICO - SISTEMA DE VISITAS</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/diagnostico.css">
+</head>
+<body>
+<div class="app-container">
+    <header class="app-header">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>DIAGNÓSTICO</h1>
+                <a href="../empresas.html" class="btn-secondary btn-back">VOLTAR</a>
+            </div>
+            <div class="user-info">
+                <span id="userName"></span>
+                <button id="logoutBtn" class="btn-secondary">SAIR</button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="app-nav">
+        <a href="../dashboard.html" class="nav-link">DASHBOARD</a>
+        <a href="../empresas.html" class="nav-link">EMPRESAS</a>
+        <a href="../visitas.html" class="nav-link">VISITAS</a>
+        <a href="../relatorios.html" class="nav-link" id="relatoriosLink" style="display: none;">RELATÓRIOS</a>
+    </nav>
+
+    <main class="app-main">
+        <!-- Informações da Empresa -->
+        <div class="empresa-info">
+            <div class="empresa-card">
+                <h2 id="empresaNome">Carregando...</h2>
+                <div class="empresa-details">
+                    <div class="empresa-detail">
+                        <strong>CNPJ:</strong>
+                        <span id="empresaCnpj">-</span>
+                    </div>
+</div>
+            </div>
+        </div>
+
+        <div class="diagnostico-container">
+            <!-- Indicador de Progresso -->
+            <div class="progress-container">
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>PROGRESSO GERAL</span>
+                        <span id="progressPercentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navegação das Abas -->
+            <div class="diagnostico-tabs">
+                <button class="tab-button active" data-tab="equipamentos">1. EQUIPAMENTOS & IMPLEMENTOS</button>
+                <button class="tab-button" data-tab="operacao">2. PRODUTIVIDADE / OPERAÇÃO</button>
+                <button class="tab-button" data-tab="previsao">3. PREVISÃO</button>
+                <button class="tab-button" data-tab="relacionamento">4. RELACIONAMENTO</button>
+            </div>
+
+            <!-- Conteúdo das Abas -->
+            <div class="tab-content">
+                <!-- Aba 1: Equipamentos & Implementos -->
+                <div id="equipamentos" class="tab-panel active">
+                    <div class="tab-header">
+                        <h2>EQUIPAMENTOS & IMPLEMENTOS</h2>
+                        <button class="btn-primary" onclick="adicionarEquipamento()">
+                            <span>+</span> ADICIONAR EQUIPAMENTO
+                        </button>
+                    </div>
+
+                    <div class="parque-table-container">
+                        <table class="parque-table" role="treegrid">
+                            <thead>
+                                <tr>
+                                    <th>ITEM</th>
+                                    <th>MARCA</th>
+                                    <th>MODELO</th>
+                                    <th>SITUAÇÃO</th>
+                                    <th>AÇÕES</th>
+                                </tr>
+                            </thead>
+                            <tbody id="parqueTableBody">
+                                <tr class="empty-state">
+                                    <td colspan="5">
+                                        <div class="empty-message">
+                                            <span class="icon-equipment">⚙️</span>
+                                            <p>NENHUM EQUIPAMENTO CADASTRADO</p>
+                                            <small>CLIQUE EM "ADICIONAR EQUIPAMENTO" PARA COMEÇAR</small>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Aba 2: Produtividade / Operação -->
+                <div id="operacao" class="tab-panel">
+                <div class="tab-header">
+                 <h2>PRODUTIVIDADE / OPERAÇÃO</h2>
+                </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="tipo_operacao">TIPO DE OPERAÇÃO *</label>
+                            <select id="tipo_operacao" required>
+                                <option value="">SELECIONE...</option>
+                                <option value="PACOTE">PACOTE</option>
+                                <option value="CORTE">CORTE</option>
+                                <option value="REPASSE">REPASSE</option>
+                                <option value="PROCESSAMENTO">PROCESSAMENTO</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tipo_sucata">TIPO DE SUCATA *</label>
+                            <select id="tipo_sucata" required>
+                                <option value="">SELECIONE...</option>
+                                <option value="CAVACO">CAVACO</option>
+                                <option value="CHAPARIA">CHAPARIA</option>
+                                <option value="FERRO FUNDIDO">FERRO FUNDIDO</option>
+                                <option value="GRAÚDA">GRAÚDA</option>
+                                <option value="MISTA">MISTA</option>
+                                <option value="MIÚDA">MIÚDA</option>
+                                <option value="OXICORTE">OXICORTE</option>
+                                <option value="PANTOGRAFICO">PANTOGRÁFICO</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="qtd_producao_mes_ton">QUANTIDADE PRODUÇÃO/MÊS (TON)</label>
+                            <input type="number" id="qtd_producao_mes_ton" step="0.01" placeholder="EX: 50.5">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ton_vendida">TONELADAS VENDIDAS/MÊS</label>
+                            <input type="number" id="ton_vendida" step="0.01" placeholder="EX: 45.2">
+                        </div>
+                        
+                        <!-- ✅ MUDANÇA: Radio buttons substituídos por select -->
+                        <div class="form-group">
+                            <label for="fundo_baia">POSSUI FUNDO DE BAIA?</label>
+                            <select id="fundo_baia">
+                                <option value="">SELECIONE...</option>
+                                <option value="1">SIM</option>
+                                <option value="0">NÃO</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="qtd_cliente_quer_crescer">CRESCIMENTO ESPERADO (%)</label>
+                            <input type="number" id="qtd_cliente_quer_crescer" placeholder="EX: 20">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cliente_fornece_para">CLIENTE HOJE FORNECE PARA</label>
+                            <select id="cliente_fornece_para">
+                                <option value="">SELECIONE...</option>
+                                <option value="FUNDIÇÃO">FUNDIÇÃO</option>
+                                <option value="MINERADORA">MINERADORA</option>
+                                <option value="RECICLAGEM">RECICLAGEM</option>
+                                <option value="SIDERURGICA">SIDERÚRGICA</option>
+                                <option value="SUCATEIRO">SUCATEIRO</option>
+                                <option value="USINA">USINA</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="preco_venda_ton">PREÇO DE VENDA/TON (R$)</label>
+                            <input type="number" id="preco_venda_ton" step="0.01" placeholder="EX: 1200.00">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba 3: Previsão -->
+                <div id="previsao" class="tab-panel">
+                <div class="tab-header">
+                <h2>PREVISÃO E OPORTUNIDADES</h2>
+                </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="tipo_cliente">TIPO DE CLIENTE (P/ QUEM PRETENDO VENDER) *</label>
+                            <select id="tipo_cliente" required>
+                                <option value="">SELECIONE...</option>
+                                <option value="FUNDIÇÃO">FUNDIÇÃO</option>
+                                <option value="MINERADORA">MINERADORA</option>
+                                <option value="RECICLAGEM">RECICLAGEM</option>
+                                <option value="SIDERURGICA">SIDERÚRGICA</option>
+                                <option value="SUCATEIRO">SUCATEIRO</option>
+                                <option value="USINA">USINA</option>
+                            </select>
+                        </div>
+                        
+                        <!-- ✅ MUDANÇA: Radio buttons substituídos por select -->
+                        <div class="form-group">
+                            <label for="expansao_equip_implement">EXPANSÃO DE EQUIPAMENTOS</label>
+                            <select id="expansao_equip_implement">
+                                <option value="">SELECIONE...</option>
+                                <option value="1">SIM</option>
+                                <option value="0">NÃO</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="prazo_expansao">PRAZO PARA EXPANSÃO</label>
+                            <input type="text" id="prazo_expansao" placeholder="EX: 6 MESES, 1 ANO">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tipo_equip_interesse">EQUIPAMENTO DE INTERESSE</label>
+                            <input type="text" id="tipo_equip_interesse" placeholder="EQUIPAMENTO QUE TEM INTERESSE">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba 4: Relacionamento -->
+                <div id="relacionamento" class="tab-panel">
+                <div class="tab-header">
+                    <h2>RELACIONAMENTO</h2>
+                 </div>
+                    <p>MARQUE OS CONTATOS ESTABELECIDOS DURANTE A VISITA:</p>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="contato_comprador">
+                            <label for="contato_comprador">CONTATO COM COMPRADOR (20%)</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="contato_operador">
+                            <label for="contato_operador">CONTATO COM OPERADOR (10%)</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="contato_encarregado">
+                            <label for="contato_encarregado">CONTATO COM ENCARREGADO (30%)</label>
+                        </div>
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="contato_diretor">
+                            <label for="contato_diretor">CONTATO COM DIRETOR (40%)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ações do Formulário -->
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="cancelarDiagnostico()">CANCELAR</button>
+                <button type="button" class="btn-success" onclick="salvarDiagnostico()">SALVAR DIAGNÓSTICO</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal Equipamento -->
+<div id="equipamentoModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="equipamentoModalTitle">ADICIONAR EQUIPAMENTO</h3>
+            <button class="modal-close" onclick="fecharModal('equipamentoModal')">&times;</button>
+        </div>
+        <form id="equipamentoForm" class="modal-body">
+            <input type="hidden" id="equipamento_id">
+            
+            <div class="form-group">
+                <label for="equipamento_impl">TIPO DE EQUIPAMENTO *</label>
+                <input type="text" id="equipamento_impl" required placeholder="EX: PRENSA, GUILHOTINA, ETC.">
+            </div>
+            
+            <div class="form-group">
+                <label for="equipamento_marca">MARCA *</label>
+                <input type="text" id="equipamento_marca" required placeholder="EX: SCHULER, AMADA, ETC.">
+            </div>
+            
+            <div class="form-group">
+                <label for="equipamento_modelo">MODELO *</label>
+                <input type="text" id="equipamento_modelo" required placeholder="MODELO ESPECÍFICO">
+            </div>
+            
+            <div class="form-group">
+                <label for="equipamento_situacao">SITUAÇÃO *</label>
+                <select id="equipamento_situacao" required>
+                    <option value="">SELECIONE...</option>
+                    <option value="ATIVO">ATIVO</option>
+                    <option value="RESERVA">RESERVA</option>
+                </select>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="fecharModal('equipamentoModal')">CANCELAR</button>
+            <button type="button" class="btn-primary" onclick="salvarEquipamento()">SALVAR</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Implemento -->
+<div id="implementoModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="implementoModalTitle">ADICIONAR IMPLEMENTO</h3>
+            <button class="modal-close" onclick="fecharModal('implementoModal')">&times;</button>
+        </div>
+        <form id="implementoForm" class="modal-body">
+            <input type="hidden" id="implemento_id">
+            <input type="hidden" id="implemento_parent_id">
+            
+            <div class="form-group">
+                <label for="implemento_impl">DESCRIÇÃO DO IMPLEMENTO *</label>
+                <input type="text" id="implemento_impl" required placeholder="EX: ROMPEDOR HIDRÁULICO, GARRA, ETC.">
+            </div>
+            
+            <div class="form-group">
+                <label for="implemento_marca">MARCA *</label>
+                <input type="text" id="implemento_marca" required placeholder="EX: INDECO, ATLAS COPCO, ETC.">
+            </div>
+            
+            <div class="form-group">
+                <label for="implemento_modelo">MODELO *</label>
+                <input type="text" id="implemento_modelo" required placeholder="MODELO ESPECÍFICO">
+            </div>
+            
+            <div class="form-group">
+                <label for="implemento_situacao">SITUAÇÃO *</label>
+                <select id="implemento_situacao" required>
+                    <option value="">SELECIONE...</option>
+                    <option value="ATIVO">ATIVO</option>
+                    <option value="RESERVA">RESERVA</option>
+                </select>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="fecharModal('implementoModal')">CANCELAR</button>
+            <button type="button" class="btn-primary" onclick="salvarImplemento()">SALVAR</button>
+        </div>
+    </div>
+</div>
+
+<!-- Carregamos apenas o diagnostico.js que terá sua própria autenticação -->
+<script src="../assets/js/diagnostico.js"></script>
+</body>
+</html>

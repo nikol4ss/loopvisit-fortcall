@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-in da Visita - Sistema de Visitas</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/checkin-simples.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>CHECK-IN DA VISITA</h1>
+            </div>
+            <div class="header-right">
+                <span class="user-info">
+                    Olá, <span id="userName">Usuário</span>
+                </span>
+                <a href="../relatorios.html" id="relatoriosLink" style="display: none;">Relatórios</a>
+                <button id="logoutBtn" class="btn-logout">Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="checkin-container">
+        <!-- Informações da Visita -->
+        <div class="visita-info">
+            <h2>📋 INFORMAÇÕES DA VISITA</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Empresa:</label>
+                    <span id="empresaNome">Carregando...</span>
+                </div>
+                <div class="info-item">
+                    <label>Data da Visita:</label>
+                    <span id="visitaData">Carregando...</span>
+                </div>
+                <div class="info-item">
+                    <label>Consultor:</label>
+                    <span id="consultorNome">Carregando...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulário de Check-in -->
+        <div class="checkin-form">
+            <h2>✍️ RESUMO DA VISITA</h2>
+            
+            <div class="form-group">
+                <label for="summary">RESUMO DA VISITA *</label>
+                <textarea 
+                    id="summary" 
+                    name="summary" 
+                    placeholder="Descreva o que aconteceu durante a visita, principais pontos discutidos, próximos passos..."
+                    required
+                ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="opportunity">GEROU OPORTUNIDADE COMERCIAL *</label>
+                <select id="opportunity" name="opportunity" class="form-select" required>
+                    <option value="">Selecione...</option>
+                    <option value="0">NÃO</option>
+                    <option value="1">SIM</option>
+                </select>
+            </div>
+
+            <!-- NOVOS CAMPOS DE NEGOCIAÇÃO -->
+            <div class="form-group">
+                <label for="negociacao">HOUVE NEGOCIAÇÃO *</label>
+                <select id="negociacao" name="negociacao" class="form-select" required>
+                    <option value="">Selecione...</option>
+                    <option value="0">NÃO</option>
+                    <option value="1">SIM</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="termometro">TERMÔMETRO DE NEGOCIAÇÃO (1 a 10)</label>
+                <div class="termometro-container">
+                    <input 
+                        type="range" 
+                        id="termometro" 
+                        name="termometro" 
+                        min="1" 
+                        max="10" 
+                        value="5"
+                        class="termometro-slider"
+                    >
+                    <div class="termometro-display">
+                        <span class="termometro-value" id="termometroValue">5</span>
+                        <span class="termometro-label">/ 10</span>
+                    </div>
+                </div>
+                <div class="termometro-labels">
+                    <span class="label-left">1 - Muito Baixo</span>
+                    <span class="label-right">10 - Muito Alto</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="numero_os">NÚMERO DA OS</label>
+                <input 
+                    type="text" 
+                    id="numero_os" 
+                    name="numero_os" 
+                    placeholder="Ex: OS-2025-001, 12345, etc."
+                    class="form-input"
+                >
+                <small class="form-help">Informe o número da Ordem de Serviço se aplicável</small>
+            </div>
+
+            <div class="form-group">
+                <label for="attachment">ANEXAR ARQUIVO (OPCIONAL)</label>
+                <input 
+                    type="file" 
+                    id="attachment" 
+                    name="attachment" 
+                    accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                    class="file-input"
+                >
+                <small class="file-help">FORMATOS ACEITOS: IMAGENS, PDF, DOC, XLS, TXT (MÁXIMO 5MB)</small>
+            </div>
+        </div>
+
+        <!-- Ações do Formulário (Modo Edição) -->
+        <div class="form-actions" id="formActions">
+            <button type="button" class="btn-secondary" onclick="cancelarCheckin()">
+                CANCELAR
+            </button>
+            <button type="button" class="btn-warning" onclick="salvarRascunho()">
+                SALVAR RASCUNHO
+            </button>
+            <button type="button" class="btn-success" onclick="concluirCheckin()">
+                CONCLUIR CHECK-IN
+            </button>
+        </div>
+
+        <!-- Ações do Modo Readonly -->
+        <div class="readonly-actions" id="readonlyActions" style="display: none;">
+            <div class="readonly-actions-container">
+                <button type="button" class="btn-secondary" onclick="voltarParaVisitas()">
+                    <span class="icon-back"></span> VOLTAR
+                </button>
+                <button type="button" class="btn-primary" onclick="copiarDados()">
+                    <span class="icon-copy"></span> COPIAR DADOS
+                </button>
+                <button type="button" class="btn-info" id="btnBaixarAnexo" onclick="baixarAnexo()" style="display: none;">
+                    <span class="icon-attachment"></span> BAIXAR ANEXO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/checkin-simples.js"></script>
+</body>
+</html>

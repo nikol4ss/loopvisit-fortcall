@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIMELINE DA EMPRESA - SISTEMA DE VISITAS</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/timeline.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>TIMELINE DA EMPRESA</h1>
+                    <a href="../empresas.html" class="btn-secondary btn-back">VOLTAR</a>
+                </div>
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn-secondary">SAIR</button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="app-nav">
+            <a href="../dashboard.html" class="nav-link">DASHBOARD</a>
+            <a href="../empresas.html" class="nav-link">EMPRESAS</a>
+            <a href="../visitas.html" class="nav-link">VISITAS</a>
+            <a href="../relatorios.html" class="nav-link" id="relatoriosLink" style="display: none;">RELATÓRIOS</a>
+        </nav>
+
+        <main class="app-main">
+            <!-- Informações da Empresa -->
+            <div class="empresa-info-section" id="empresaInfoSection" style="display: none;">
+                <div class="empresa-header">
+                    <h2 id="empresaNome">Carregando...</h2>
+                    <div class="empresa-details">
+                        <span id="empresaCidade"></span>
+                        <span id="empresaEstado"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filters-section">
+                <div class="filters-header">
+                    <h2>🔍 FILTROS</h2>
+                </div>
+                <div class="filters-grid">
+                    <div class="form-group">
+                        <label>DATA INICIAL</label>
+                        <input type="date" id="dataInicio">
+                    </div>
+                    <div class="form-group">
+                        <label>DATA FINAL</label>
+                        <input type="date" id="dataFim">
+                    </div>
+                    <div class="filter-actions">
+                        <button id="applyFilters" class="btn-primary">
+                            <span class="btn-icon">🔍</span>
+                            FILTRAR
+                        </button>
+                        <button id="clearFilters" class="btn-secondary">
+                            <span class="btn-icon">🗑️</span>
+                            LIMPAR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline de Eventos -->
+            <div class="timeline-section">
+                <div class="section-header">
+                    <h2>📅 TIMELINE DE EVENTOS</h2>
+                    <div class="results-info">
+                        <span id="resultsCount">Carregando...</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-container" id="timelineContainer">
+                    <div class="loading-state">
+                        <div class="loading-placeholder">
+                            <div class="loading-icon">⏳</div>
+                            <p>CARREGANDO TIMELINE...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paginação -->
+                <div class="pagination-container" id="paginationContainer" style="display: none;">
+                    <button id="prevPage" class="btn-pagination">ANTERIOR</button>
+                    <span id="pageInfo">Página 1 de 1</span>
+                    <button id="nextPage" class="btn-pagination">PRÓXIMA</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/timeline.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DASHBOARD - SISTEMA DE VISITAS</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard-semanal.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1>DASHBOARD SEMANAL</h1>
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn-secondary">SAIR</button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="app-nav">
+            <a href="dashboard.html" class="nav-link active">DASHBOARD</a>
+            <a href="empresas.html" class="nav-link">EMPRESAS</a>
+            <a href="visitas.html" class="nav-link">VISITAS</a>
+            <a href="relatorios.html" class="nav-link" id="relatoriosLink" style="display: none;">RELATÓRIOS</a>
+        </nav>
+
+        <main class="app-main">
+            <!-- Navegação Semanal -->
+            <div class="week-navigation">
+                <button id="prevWeek" class="week-nav-btn">← SEMANA ANTERIOR</button>
+                <div>
+                    <h2 id="weekTitle">SEMANA ATUAL</h2>
+                    <div class="week-period" id="weekPeriod"></div>
+                </div>
+                <button id="nextWeek" class="week-nav-btn">PRÓXIMA SEMANA →</button>
+            </div>
+
+            <!-- Filtros para Gestores -->
+            <div class="gestor-filters" id="gestorFilters" style="display: none;">
+                <h3>🎯 FILTROS DE GESTÃO</h3>
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label>CONSULTOR</label>
+                        <select id="consultorFilter">
+                            <option value="">TODOS OS CONSULTORES</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>STATUS</label>
+                        <select id="statusFilter">
+                            <option value="">TODOS OS STATUS</option>
+                            <option value="AGENDADA">AGENDADA</option>
+                            <option value="REALIZADA">REALIZADA</option>
+                            <option value="REMARCADA">REMARCADA</option>
+                            <option value="CANCELADA">CANCELADA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button id="applyFilters" class="btn-primary">APLICAR FILTROS</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cards de Resumo Semanal -->
+            <div class="cards-grid">
+                <div class="card card-agendada">
+                    <h3>📅 AGENDADAS</h3>
+                    <span class="card-number" id="cardAgendadas">0</span>
+                </div>
+                <div class="card card-realizada">
+                    <h3>✅ REALIZADAS</h3>
+                    <span class="card-number" id="cardRealizadas">0</span>
+                </div>
+                <div class="card card-remarcada">
+                    <h3>🔄 REMARCADAS</h3>
+                    <span class="card-number" id="cardRemarcadas">0</span>
+                </div>
+                <div class="card card-atrasada">
+                    <h3>⚠️ ATRASADAS</h3>
+                    <span class="card-number" id="cardAtrasadas">0</span>
+                </div>
+                <div class="card card-cancelada">
+                    <h3>❌ CANCELADAS</h3>
+                    <span class="card-number" id="cardCanceladas">0</span>
+                </div>
+            </div>
+
+            <!-- Tabela de Visitas da Semana -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h2>📋 PROGRAMAÇÃO DA SEMANA</h2>
+                    <a href="visitas/novo.html" class="btn-primary">+ NOVA VISITA</a>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>CLIENTE</th>
+                                <th>DATA DA VISITA</th>
+                                <th>DATA DO CHECK-IN</th>
+                                <th>TIPO</th>
+                                <th>SEQ.</th>
+                                <th>CLASSIFICAÇÃO</th>
+                                <th>STATUS</th>
+                                <th>AÇÕES</th>
+                            </tr>
+                        </thead>
+                        <tbody id="visitasTableBody">
+                            <tr>
+                                <td colspan="8" class="text-center">Carregando visitas da semana...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/dashboard-semanal.js"></script>
+</body>
+</html>

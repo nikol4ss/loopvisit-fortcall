@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REMARCAR VISITA - SISTEMA DE VISITAS</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1>REMARCAR VISITA</h1>
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn-secondary">SAIR</button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="app-nav">
+            <a href="../dashboard.html" class="nav-link">DASHBOARD</a>
+            <a href="../empresas.html" class="nav-link">EMPRESAS</a>
+            <a href="../visitas.html" class="nav-link active">VISITAS</a>
+            <a href="../relatorios.html" class="nav-link" id="relatoriosLink" style="display: none;">RELATÓRIOS</a>
+        </nav>
+
+        <main class="app-main">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2>REMARCAR VISITA</h2>
+                    <a href="../dashboard.html" class="btn-secondary">VOLTAR</a>
+                </div>
+
+                <!-- Informações da Visita Atual -->
+                <div class="visita-info">
+                    <h3>INFORMAÇÕES ATUAIS</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>EMPRESA:</strong>
+                            <span id="empresaNome">-</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>DATA ATUAL:</strong>
+                            <span id="dataAtual">-</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>TIPO:</strong>
+                            <span id="tipoVisita">-</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>SEQUÊNCIA:</strong>
+                            <span id="sequenciaVisita">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="remarcarForm" class="form-content">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="newDate">NOVA DATA E HORA *</label>
+                            <input type="datetime-local" id="newDate" name="newDate" required>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="motivo">MOTIVO DA REMARCAÇÃO</label>
+                            <textarea id="motivo" name="motivo" rows="3" placeholder="DESCREVA O MOTIVO DA REMARCAÇÃO..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" onclick="window.location.href='../dashboard.html'" class="btn-secondary">CANCELAR</button>
+                        <button type="submit" class="btn-primary">CONFIRMAR REMARCAÇÃO</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/remarcar-visita.js"></script>
+</body>
+</html>

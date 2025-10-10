@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RELATÓRIOS - SISTEMA DE VISITAS</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/relatorios-simples.css">
+    <!-- SheetJS para exportação Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1>📊 RELATÓRIOS</h1>
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn-secondary">SAIR</button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="app-nav">
+            <a href="dashboard.html" class="nav-link">DASHBOARD</a>
+            <a href="empresas.html" class="nav-link">EMPRESAS</a>
+            <a href="visitas.html" class="nav-link">VISITAS</a>
+            <a href="relatorios.html" class="nav-link active">RELATÓRIOS</a>
+        </nav>
+
+        <main class="app-main">
+            <!-- Relatório de Visitas -->
+            <div class="report-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-icon">🗓️</div>
+                        <h2>RELATÓRIO DE VISITAS</h2>
+                    </div>
+                    <div class="section-description">
+                        Exporte todas as visitas cadastradas no sistema
+                    </div>
+                </div>
+                
+                <div class="filters-container">
+                    <div class="filter-row">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="visitasPeriodoTotal">
+                                <span class="checkmark"></span>
+                                PERÍODO TOTAL
+                            </label>
+                        </div>
+                        
+                        <div class="date-group">
+                            <div class="form-group">
+                                <label>DATA INICIAL</label>
+                                <input type="date" id="visitasDataInicio" class="date-input">
+                            </div>
+                            <div class="form-group">
+                                <label>DATA FINAL</label>
+                                <input type="date" id="visitasDataFim" class="date-input">
+                            </div>
+                        </div>
+                        
+                        <div class="action-group">
+                            <button id="exportarVisitas" class="btn-export">
+                                <span class="btn-icon">📥</span>
+                                EXPORTAR EXCEL
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h3>📋 PRÉVIA DOS DADOS</h3>
+                    <div id="visitasPreview" class="data-preview">
+                        <div class="preview-placeholder">
+                            <div class="placeholder-icon">📊</div>
+                            <p>Clique em "EXPORTAR EXCEL" para gerar o relatório</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatório de Check-ins -->
+            <div class="report-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-icon">✅</div>
+                        <h2>RELATÓRIO DE CHECK-INS</h2>
+                    </div>
+                    <div class="section-description">
+                        Exporte todos os check-ins realizados nas visitas
+                    </div>
+                </div>
+                
+                <div class="filters-container">
+                    <div class="filter-row">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="checkinsPeriodoTotal">
+                                <span class="checkmark"></span>
+                                PERÍODO TOTAL
+                            </label>
+                        </div>
+                        
+                        <div class="date-group">
+                            <div class="form-group">
+                                <label>DATA INICIAL</label>
+                                <input type="date" id="checkinsDataInicio" class="date-input">
+                            </div>
+                            <div class="form-group">
+                                <label>DATA FINAL</label>
+                                <input type="date" id="checkinsDataFim" class="date-input">
+                            </div>
+                        </div>
+                        
+                        <div class="action-group">
+                            <button id="exportarCheckins" class="btn-export">
+                                <span class="btn-icon">📥</span>
+                                EXPORTAR EXCEL
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <h3>📋 PRÉVIA DOS DADOS</h3>
+                    <div id="checkinsPreview" class="data-preview">
+                        <div class="preview-placeholder">
+                            <div class="placeholder-icon">✅</div>
+                            <p>Clique em "EXPORTAR EXCEL" para gerar o relatório</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts específicos para relatórios -->
+    <script src="assets/js/relatorios-auth.js"></script>
+    <script src="assets/js/relatorios-simples.js"></script>
+</body>
+</html>

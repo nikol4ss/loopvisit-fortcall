@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTV - Diagnóstico de Propriedade/Cliente</title>
+    <link rel="stylesheet" href="../assets/css/rtv-diagnostico.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="notifications"></div>
+    
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1><i class="fas fa-clipboard-check"></i> RTV - Diagnóstico de Propriedade/Cliente</h1>
+            </div>
+            <div class="header-right">
+                <span class="user-info">
+                    <i class="fas fa-user"></i>
+                    <span id="userName">Demonstração</span>
+                </span>
+                <button class="btn-secondary" onclick="window.location.href='../rtv-diagnosticos/'">
+                    <i class="fas fa-list"></i> Ver Diagnósticos
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="form-container">
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-text">0% completo (0/9 campos)</div>
+            </div>
+
+            <form id="rtvDiagnosticoForm" class="diagnostico-form">
+                <!-- Seção 1: Informações Básicas -->
+                <div class="form-section">
+                    <h2><i class="fas fa-info-circle"></i> Informações Básicas</h2>
+                    
+                    <div class="form-group">
+                        <label for="consultor_nome">Nome do RTV *</label>
+                        <input type="text" id="consultor_nome" name="consultor_nome" required 
+                               placeholder="Nome completo do RTV responsável">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cliente_nome">Nome do Cliente/Empresa *</label>
+                        <input type="text" id="cliente_nome" name="cliente_nome" required 
+                               placeholder="Razão social ou nome do cliente">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipo_cliente">Tipo de Cliente *</label>
+                        <select id="tipo_cliente" name="tipo_cliente" required>
+                            <option value="">Selecione o tipo de cliente</option>
+                            <option value="produtor_rural">Produtor Rural</option>
+                            <option value="revenda">Revenda</option>
+                            <option value="cooperativa">Cooperativa</option>
+                            <option value="industria">Indústria</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="localizacao">Localização</label>
+                        <input type="text" id="localizacao" name="localizacao" 
+                               placeholder="Cidade/UF ou coordenadas GPS">
+                    </div>
+                </div>
+
+                <!-- Seção 2: Caracterização da Propriedade/Operação -->
+                <div class="form-section">
+                    <h2><i class="fas fa-map-marked-alt"></i> Caracterização da Propriedade/Operação</h2>
+                    <div class="form-group">
+                        <label for="caracterizacao_propriedade">Descrição Completa</label>
+                        <textarea id="caracterizacao_propriedade" name="caracterizacao_propriedade" rows="6"
+                                  placeholder="Descreva área total (ha/m² ou estrutura física), área produtiva, principais culturas/atividades, histórico de produção, tecnologias utilizadas, estrutura de armazenagem e equipe/mão de obra."></textarea>
+                    </div>
+                </div>
+
+                <!-- Seção 3: Diagnóstico Comercial -->
+                <div class="form-section">
+                    <h2><i class="fas fa-chart-line"></i> Diagnóstico Comercial</h2>
+                    <div class="form-group">
+                        <label for="diagnostico_comercial">Análise Comercial</label>
+                        <textarea id="diagnostico_comercial" name="diagnostico_comercial" rows="6"
+                                  placeholder="Relate produtos adquiridos nos últimos 12 meses, volumes médios, principais fornecedores, condições de compra e mudanças no comportamento de compra."></textarea>
+                    </div>
+                </div>
+
+                <!-- Seção 4: Situação Atual e Mudanças -->
+                <div class="form-section">
+                    <h2><i class="fas fa-exchange-alt"></i> Situação Atual e Mudanças</h2>
+                    <div class="form-group">
+                        <label for="situacao_mudancas">Comparativo e Oportunidades</label>
+                        <textarea id="situacao_mudancas" name="situacao_mudancas" rows="6"
+                                  placeholder="Compare com visitas anteriores, descreva dificuldades relatadas e oportunidades identificadas."></textarea>
+                    </div>
+                </div>
+
+                <!-- Seção 5: Sustentabilidade e Boas Práticas -->
+                <div class="form-section">
+                    <h2><i class="fas fa-leaf"></i> Sustentabilidade e Boas Práticas</h2>
+                    <div class="form-group">
+                        <label for="sustentabilidade">Práticas Sustentáveis</label>
+                        <textarea id="sustentabilidade" name="sustentabilidade" rows="6"
+                                  placeholder="Anote práticas conservacionistas, gestão de resíduos e certificações/programas de qualidade."></textarea>
+                    </div>
+                </div>
+
+                <!-- Seção 6: Relacionamento e Perspectivas -->
+                <div class="form-section">
+                    <h2><i class="fas fa-handshake"></i> Relacionamento e Perspectivas</h2>
+                    <div class="form-group">
+                        <label for="relacionamento_perspectivas">Análise de Relacionamento</label>
+                        <textarea id="relacionamento_perspectivas" name="relacionamento_perspectivas" rows="6"
+                                  placeholder="Descreva satisfação com fornecedores atuais, abertura para novas soluções, necessidades de curto/médio prazo e expectativa de crescimento ou redução da operação."></textarea>
+                    </div>
+                </div>
+
+                <!-- Seção 7: Observações Gerais do RTV -->
+                <div class="form-section">
+                    <h2><i class="fas fa-sticky-note"></i> Observações Gerais do RTV</h2>
+                    <div class="form-group">
+                        <label for="observacoes_rtv">Observações Adicionais</label>
+                        <textarea id="observacoes_rtv" name="observacoes_rtv" rows="6"
+                                  placeholder="Espaço livre para observações adicionais, percepções do RTV, postura do cliente e oportunidades."></textarea>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="form-actions">
+                    <button type="button" id="clearBtn" class="btn-secondary">
+                        <i class="fas fa-eraser"></i> Limpar Formulário
+                    </button>
+                    <button type="button" id="saveBtn" class="btn-primary">
+                        <i class="fas fa-save"></i> Salvar Diagnóstico
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="../assets/js/auth-rtv-diagnostico.js"></script>
+    <script src="../assets/js/rtv-diagnostico.js"></script>
+</body>
+</html>

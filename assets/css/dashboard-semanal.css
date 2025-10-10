@@ -1,0 +1,347 @@
+/* Estilos para o Dashboard Semanal */
+
+/* Navegação Semanal */
+.week-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  background: linear-gradient(to right, #f8f9fa, #e9ecef);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.week-navigation h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.week-period {
+  font-size: 0.9rem;
+  color: #666;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.week-nav-btn {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.week-nav-btn:hover {
+  background-color: #f1f1f1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Filtros para Gestores */
+.gestor-filters {
+  background: linear-gradient(to right, #f0f4f8, #e6f0f9);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.gestor-filters h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  align-items: end;
+}
+
+/* Cards de Resumo */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.card {
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+  margin-top: 0;
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.card-number {
+  font-size: 2rem;
+  font-weight: bold;
+  display: block;
+}
+
+.card-agendada {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-left: 5px solid #2196f3;
+}
+
+.card-realizada {
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  border-left: 5px solid #4caf50;
+}
+
+.card-remarcada {
+  background: linear-gradient(135deg, #fff8e1, #ffecb3);
+  border-left: 5px solid #ffc107;
+}
+
+.card-atrasada {
+  background: linear-gradient(135deg, #fff5f5, #ffccbc);
+  border-left: 5px solid #ff5722;
+}
+
+.card-cancelada {
+  background: linear-gradient(135deg, #fafafa, #f5f5f5);
+  border-left: 5px solid #9e9e9e;
+}
+
+/* Tabela de Visitas */
+.table-section {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(to right, #f8f9fa, #e9ecef);
+  border-bottom: 1px solid #eee;
+}
+
+.table-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+.table-container {
+  padding: 0;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background-color: #f8f9fa;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+.data-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.data-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-align: center;
+  min-width: 100px;
+}
+
+.status-agendada {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-realizada {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-remarcada {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.status-cancelada {
+  background-color: #f5f5f5;
+  color: #757575;
+}
+
+.status-atrasada {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Linhas coloridas por status */
+.row-agendada {
+  border-left: 4px solid #2196f3;
+}
+
+.row-realizada {
+  border-left: 4px solid #4caf50;
+}
+
+.row-remarcada {
+  border-left: 4px solid #ffc107;
+}
+
+.row-cancelada {
+  border-left: 4px solid #9e9e9e;
+}
+
+.row-atrasada {
+  border-left: 4px solid #f44336;
+}
+
+/* Rating com estrelas */
+.rating {
+  color: #ffc107;
+  letter-spacing: 2px;
+}
+
+/* Botões de ação */
+.btn-action {
+  display: inline-block;
+  padding: 6px 10px;
+  margin: 2px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-checkin {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.btn-checkin:hover {
+  background-color: #bbdefb;
+}
+
+.btn-remarcar {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.btn-remarcar:hover {
+  background-color: #ffecb3;
+}
+
+.btn-cancelar {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.btn-cancelar:hover {
+  background-color: #ffcdd2;
+}
+
+.btn-view {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.btn-view:hover {
+  background-color: #c8e6c9;
+}
+
+/* Responsividade */
+@media (max-width: 992px) {
+  .filter-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .week-navigation {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .week-nav-btn {
+    width: 100%;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .table-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .table-header a {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px;
+  }
+
+  .btn-action {
+    display: block;
+    width: 100%;
+    margin: 5px 0;
+  }
+}

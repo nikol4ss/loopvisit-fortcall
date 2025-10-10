@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHECKINS - SISTEMA DE VISITAS</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/checkins-list.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>CHECKINS REALIZADOS</h1>
+                    <a href="../visitas.html" class="btn-secondary btn-back">VOLTAR</a>
+                </div>
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn-secondary">SAIR</button>
+                </div>
+            </div>
+        </header>
+
+        <nav class="app-nav">
+            <a href="../dashboard.html" class="nav-link">DASHBOARD</a>
+            <a href="../empresas.html" class="nav-link">EMPRESAS</a>
+            <a href="../visitas.html" class="nav-link">VISITAS</a>
+            <a href="../relatorios.html" class="nav-link" id="relatoriosLink" style="display: none;">RELATÓRIOS</a>
+        </nav>
+
+        <main class="app-main">
+            <!-- Filtros -->
+            <div class="filters-section">
+                <div class="filters-grid">
+                    <div class="form-group">
+                        <label>DATA INICIAL</label>
+                        <input type="date" id="dataInicio">
+                    </div>
+                    <div class="form-group">
+                        <label>DATA FINAL</label>
+                        <input type="date" id="dataFim">
+                    </div>
+                    <div class="form-group">
+                        <button id="applyFilters" class="btn-primary">FILTRAR</button>
+                        <button id="clearFilters" class="btn-secondary">LIMPAR</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Checkins -->
+            <div class="checkins-section">
+                <div class="section-header">
+                    <h2>CHECKINS REALIZADOS</h2>
+                    <div class="results-info">
+                        <span id="resultsCount">Carregando...</span>
+                    </div>
+                </div>
+                
+                <div class="checkins-container" id="checkinsContainer">
+                    <div class="loading-state">
+                        <p>CARREGANDO CHECKINS...</p>
+                    </div>
+                </div>
+
+                <!-- Paginação -->
+                <div class="pagination-container" id="paginationContainer" style="display: none;">
+                    <button id="prevPage" class="btn-secondary">ANTERIOR</button>
+                    <span id="pageInfo">Página 1 de 1</span>
+                    <button id="nextPage" class="btn-secondary">PRÓXIMA</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Carregamos apenas o checkins-list.js que terá sua própria autenticação -->
+    <script src="../assets/js/checkins-list.js"></script>
+</body>
+</html>
