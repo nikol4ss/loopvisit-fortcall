@@ -25,9 +25,9 @@ class Env {
 }
 
 // Configurações diretas - sem arquivo .env por enquanto
-$_ENV['DB_HOST'] = 'localhost';
-$_ENV['DB_NAME'] = 'sistema_visitas_fortcal';
-$_ENV['DB_USER'] = 'root';
+$_ENV['DB_HOST'] = 'mysql743.umbler.com';
+$_ENV['DB_NAME'] = 'loopvisit';
+$_ENV['DB_USER'] = 'looproot';
 $_ENV['DB_PASS'] = 'vertrigo'; // Coloque sua senha aqui
 $_ENV['JWT_SECRET'] = 'chave_secreta_sistema_visitas_2024_muito_forte';
 
