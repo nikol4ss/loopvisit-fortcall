@@ -25,19 +25,18 @@ class Env {
 }
 
 
-    // Local
-    $_ENV['DB_HOST'] = $_ENV['DB_HOST'] ?? '127.0.0.1';
-    $_ENV['DB_NAME'] = $_ENV['DB_NAME'] ?? 'LPV';
-    $_ENV['DB_USER'] = $_ENV['DB_USER'] ?? 'root';
-    $_ENV['DB_PASS'] = $_ENV['DB_PASS'] ?? '2004';
-    $_ENV['JWT_SECRET'] = $_ENV['JWT_SECRET'] ?? 'chave_secreta_sistema_visitas_2024_muito_forte';
-
-// Produção
-// $_ENV['DB_HOST'] = $_ENV['DB_HOST'] ?? '50.116.87.50';
-// $_ENV['DB_NAME'] = $_ENV['DB_NAME'] ?? 'v4comp90_sistema_visitas';
-// $_ENV['DB_USER'] = $_ENV['DB_USER'] ?? 'v4comp90_admin';
-// $_ENV['DB_PASS'] = $_ENV['DB_PASS'] ?? 'vertrigo@';
+// Local
+// $_ENV['DB_HOST'] = $_ENV['DB_HOST'] ?? '127.0.0.1';
+// $_ENV['DB_NAME'] = $_ENV['DB_NAME'] ?? 'LPV';
+// $_ENV['DB_USER'] = $_ENV['DB_USER'] ?? 'root';
+// $_ENV['DB_PASS'] = $_ENV['DB_PASS'] ?? '2004';
 // $_ENV['JWT_SECRET'] = $_ENV['JWT_SECRET'] ?? 'chave_secreta_sistema_visitas_2024_muito_forte';
+
+$_ENV['DB_HOST'] = $_ENV['DB_HOST'] ?? '50.116.87.50';
+$_ENV['DB_NAME'] = $_ENV['DB_NAME'] ?? 'v4comp90_sistema_visitas';
+$_ENV['DB_USER'] = $_ENV['DB_USER'] ?? 'v4comp90_admin';
+$_ENV['DB_PASS'] = $_ENV['DB_PASS'] ?? 'vertrigo@';
+$_ENV['JWT_SECRET'] = $_ENV['JWT_SECRET'] ?? 'chave_secreta_sistema_visitas_2024_muito_forte';
 
 
 // Carregar variáveis de ambiente
