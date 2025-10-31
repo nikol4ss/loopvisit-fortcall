@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/dashboard-semanal.css">
 </head>
+
 <body>
     <div class="app-container">
         <header class="app-header">
@@ -93,7 +95,7 @@
                     <h2>📋 PROGRAMAÇÃO DA SEMANA</h2>
                     <a href="visitas/novo.html" class="btn-primary">+ NOVA VISITA</a>
                 </div>
-                
+
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
@@ -121,5 +123,24 @@
 
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/dashboard-semanal.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const userData = window.TokenManager.getUser();
+            console.log("Dados do usuário:", userData);
+
+            const userNameElement = document.getElementById("userName");
+            if (userNameElement) userNameElement.textContent = userData.name || "Usuário";
+
+            // OCULTAR EMPRESAS PARA GESTOR
+            const empresasLink = document.querySelector('a[href="empresas.html"]');
+            if (userData.role === "CONSULTOR") {
+                empresasLink?.remove();
+            }
+
+            initWeekNavigation();
+            setupEventListeners();
+        });
+    </script>
 </body>
+
 </html>

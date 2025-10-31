@@ -70,7 +70,7 @@
                     <h2>LISTA DE VISITAS</h2>
                     <a href="visitas/novo.html" class="btn-primary">NOVA VISITA</a>
                 </div>
-                
+
                 <div class="table-container">
                     <table class="data-table">
                         <thead>
@@ -90,6 +90,17 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+            <div id="cancelModal" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <h3>Cancelar Visita</h3>
+                    <p>Informe o motivo do cancelamento:</p>
+                    <textarea id="cancelMotivo" rows="4"></textarea>
+                    <div class="modal-actions">
+                        <button id="confirmCancel" class="btn-danger">Confirmar</button>
+                        <button id="closeCancel" class="btn-secondary">Fechar</button>
+                    </div>
                 </div>
             </div>
         </main>

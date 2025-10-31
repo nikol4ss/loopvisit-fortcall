@@ -103,7 +103,6 @@ const loadCheckinData = async () => {
         opportunity: "0",
         negociacao: "0",
         termometro: 5,
-        numero_os: "",
       }
       return
     }
@@ -144,10 +143,10 @@ const loadCheckinData = async () => {
         }
       }
 
-      // Número da OS
-      if (checkinData.numero_os) {
-        document.getElementById("numero_os").value = checkinData.numero_os
-      }
+      // // Número da OS
+      // if (checkinData.numero_os) {
+      //   document.getElementById("numero_os").value = checkinData.numero_os
+      // }
 
       // Anexo
       if (checkinData.attachment || checkinData.has_attachment == 1) {
@@ -454,9 +453,9 @@ const collectFormData = () => {
   const termometro = document.getElementById("termometro").value
   formData.termometro = Number.parseInt(termometro) || 5
 
-  // Número da OS
-  const numeroOs = document.getElementById("numero_os").value.trim()
-  formData.numero_os = numeroOs
+  // // Número da OS
+  // const numeroOs = document.getElementById("numero_os").value.trim()
+  // formData.numero_os = numeroOs
 
   console.log("Dados coletados do formulário:", formData)
   return formData
@@ -620,7 +619,7 @@ const dispararWebhook = async (formData) => {
       houve_negociacao: houveNegociacao ? "SIM" : "NÃO",
       negociacao_comercial: houveNegociacao,
       termometro_negociacao: formData.termometro || 5,
-      numero_os: sanitizeForJson(formData.numero_os) || "",
+      // numero_os: sanitizeForJson(formData.numero_os) || "",
 
       // Metadados
       timestamp: new Date().toISOString(),
@@ -693,10 +692,10 @@ const copiarDados = () => {
     const termometro = document.getElementById("termometro").value
     dados.push(`TERMÔMETRO DE NEGOCIAÇÃO: ${termometro}/10`)
 
-    const numeroOs = document.getElementById("numero_os").value
-    if (numeroOs) {
-      dados.push(`NÚMERO DA OS: ${numeroOs}`)
-    }
+    // const numeroOs = document.getElementById("numero_os").value
+    // if (numeroOs) {
+    //   dados.push(`NÚMERO DA OS: ${numeroOs}`)
+    // }
 
     if (checkinData && checkinData.attachment) {
       dados.push(`ANEXO: ${checkinData.attachment_original_name || checkinData.attachment}`)
