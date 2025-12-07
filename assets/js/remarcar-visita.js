@@ -47,7 +47,7 @@ const loadVisitaData = async () => {
       }
 
       // Preencher informações atuais
-      document.getElementById("empresaNome").textContent = visita.empresa_nome || "N/A"
+      document.getElementById("empresaNome").textContent = visita.empresa_nome || visita.empresa_livre
 
       // Formatar data
       const dataVisita = new Date(visita.date)

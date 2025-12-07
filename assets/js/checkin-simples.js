@@ -73,7 +73,7 @@ const loadVisitaData = async () => {
     visitaData = response.data;
     console.log("📋 Dados da visita extraídos:", visitaData);
 
-    const empresa = visitaData.empresa_nome || "N/A";
+    const empresa = visitaData.empresa_nome || visitaData.empresa_livre ;
     const dataVisita = visitaData.date || "N/A";
     const consultor = visitaData.consultor_nome || "N/A";
     const tipoVisita = visitaData.type || "N/A";

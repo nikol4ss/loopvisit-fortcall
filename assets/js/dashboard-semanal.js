@@ -278,13 +278,30 @@ function renderVisitasTable(visitas) {
     // Adicionar classe baseada no status
     row.className = getStatusClass(visita.status_calculado)
 
-    // Formatar informações da empresa
-    let empresaInfo = visita.empresa_nome || "-"
-    if (visita.empresa_cnpj) {
-      empresaInfo += `<br><small class="text-muted">CNPJ: ${visita.empresa_cnpj}</small>`
+    let empresaInfo;
+
+    // 1. Se for prospecção → usa nome livre
+    if (visita.is_prospeccao == 1) {
+      empresaInfo = visita.empresa_livre;
     }
+    // 2. Senão → usa empresa_nome (pode ser "EMPRESA NÃO REGISTRADA")
+    else {
+      empresaInfo = visita.empresa_nome;
+    }
+
+    // Mostrar aviso claro se não for empresa cadastrada
+    if (empresaInfo === "EMPRESA NÃO REGISTRADA") {
+      empresaInfo += `<br><small class="text-danger">Empresa não registrada</small>`;
+    }
+
+    // CNPJ
+    if (visita.empresa_cnpj) {
+      empresaInfo += `<br><small class="text-muted">CNPJ: ${visita.empresa_cnpj}</small>`;
+    }
+
+    // Cidade
     if (visita.empresa_cidade) {
-      empresaInfo += `<br><small class="text-muted">${visita.empresa_cidade}</small>`
+      empresaInfo += `<br><small class="text-muted">${visita.empresa_cidade}</small>`;
     }
 
     // CORREÇÃO: Buscar data do check-in em múltiplos campos

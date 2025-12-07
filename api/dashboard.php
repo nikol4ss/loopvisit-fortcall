@@ -57,34 +57,49 @@ try {
     if (isset($_GET['action']) && $_GET['action'] === 'visitas') {
         // CORREÇÃO: Adicionar JOIN com checkin e usar campos corretos
         $query = "
-            SELECT 
-                v.id,
-                v.date,
-                v.type,
-                v.visit_sequence,
-                v.status,
-                v.objetivo,
-                v.meta_estabelecida,
-                e.name as empresa_nome,
-                e.cnpj as empresa_cnpj,
-                e.segment as empresa_segmento,
-                e.region as empresa_regiao,
-                e.rating as empresa_rating,
-                u.name as consultor_nome,
-                c.created_at as checkin_data,
-                c.updated_at as checkin_updated,
-                c.summary as checkin_summary,
-                c.opportunity as checkin_opportunity,
-                CASE 
-                   WHEN v.status = 'AGENDADA' AND v.date < NOW() THEN 'ATRASADA'
-                   ELSE v.status
-                END as status_calculado
-            FROM visitas v
-            LEFT JOIN empresas e ON v.company_id = e.id
-            LEFT JOIN usuarios u ON v.created_by = u.id
-            LEFT JOIN checkin c ON v.id = c.visita_id
-            $whereClause
-            ORDER BY v.date DESC
+           SELECT
+            v.id,
+            v.date,
+            v.type,
+            v.visit_sequence,
+            v.status,
+            v.objetivo,
+            v.meta_estabelecida,
+
+            /* REGRA DE EXIBIÇÃO DO NOME */
+            CASE
+                WHEN v.company_id IS NOT NULL AND e.name IS NOT NULL THEN e.name
+                WHEN v.is_prospeccao = 1 AND v.empresa_livre IS NOT NULL THEN v.empresa_livre
+                ELSE 'EMPRESA NÃO REGISTRADA'
+            END AS empresa_nome,
+
+            /* CNPJ – só se tiver empresa */
+            CASE
+                WHEN v.company_id IS NOT NULL THEN e.cnpj
+                ELSE NULL
+            END AS empresa_cnpj,
+
+            e.segment AS empresa_segmento,
+            e.region AS empresa_regiao,
+            e.rating AS empresa_rating,
+
+            u.name AS consultor_nome,
+            c.created_at AS checkin_data,
+            c.updated_at AS checkin_updated,
+            c.summary AS checkin_summary,
+            c.opportunity AS checkin_opportunity,
+
+            CASE
+                WHEN v.status = 'AGENDADA' AND v.date < NOW() THEN 'ATRASADA'
+                ELSE v.status
+            END AS status_calculado
+
+        FROM visitas v
+        LEFT JOIN empresas e ON v.company_id = e.id
+        LEFT JOIN usuarios u ON v.created_by = u.id
+        LEFT JOIN checkin c ON v.id = c.visita_id
+        $whereClause
+        ORDER BY v.date DESC
         ";
 
         $stmt = $db->prepare($query);
@@ -112,7 +127,7 @@ try {
 
     // Cards de resumo
     $cards = [];
-    
+
     $statusList = ['AGENDADA', 'REALIZADA', 'REMARCADA', 'CANCELADA'];
     foreach ($statusList as $status) {
         $query = "SELECT COUNT(*) as total FROM visitas v $whereClause AND v.status = :status";

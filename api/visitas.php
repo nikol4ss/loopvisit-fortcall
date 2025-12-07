@@ -43,15 +43,22 @@ switch ($_SERVER['REQUEST_METHOD']) {
         try {
             if ($visitaId) {
                 // Buscar visita específica
-                $query = "SELECT v.*, e.name as empresa_nome, e.address as empresa_endereco,
-                                 e.phone as empresa_telefone, e.whatsapp as empresa_whatsapp,
-                                 e.responsible as empresa_responsavel,
-                                 c.nome as cidade_nome, u.name as consultor_nome
-                          FROM visitas v
-                          LEFT JOIN empresas e ON v.company_id = e.id
-                          LEFT JOIN cidades c ON v.city_id = c.id_cidade
-                          LEFT JOIN usuarios u ON v.created_by = u.id
-                          WHERE v.id = ?";
+                $query = "SELECT
+                    v.*,
+                    v.empresa_livre,
+                    e.name as empresa_nome,
+                    e.address as empresa_endereco,
+                    e.phone as empresa_telefone,
+                    e.whatsapp as empresa_whatsapp,
+                    e.responsible as empresa_responsavel,
+                    c.nome as cidade_nome,
+                    u.name as consultor_nome
+                FROM visitas v
+                LEFT JOIN empresas e ON v.company_id = e.id
+                LEFT JOIN cidades c ON v.city_id = c.id_cidade
+                LEFT JOIN usuarios u ON v.created_by = u.id
+                WHERE v.id = ?";
+
 
                 $stmt = $db->prepare($query);
                 $stmt->execute([$visitaId]);
@@ -76,7 +83,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 $whereClause = "WHERE 1=1";
                 $params = [];
 
-                // 🔥 NOVA LÓGICA: Consultor vê visitas de empresas onde é principal OU secundário
+                // Consultor vê visitas de empresas onde é principal OU secundário
                 if ($user['role'] === 'CONSULTOR') {
                     $whereClause .= " AND (v.created_by = ? OR EXISTS (
                         SELECT 1 FROM empresas e2
@@ -124,18 +131,23 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     $params[] = $_GET['consultor'];
                 }
 
-                $query = "SELECT v.*, e.name as empresa_nome, c.nome as cidade_nome,
-                                 u.name as consultor_nome,
-                                 CASE
-                                    WHEN v.status = 'AGENDADA' AND v.date < NOW() THEN 'ATRASADA'
-                                    ELSE v.status
-                                 END as status_calculado
-                          FROM visitas v
-                          LEFT JOIN empresas e ON v.company_id = e.id
-                          LEFT JOIN cidades c ON v.city_id = c.id_cidade
-                          LEFT JOIN usuarios u ON v.created_by = u.id
-                          $whereClause
-                          ORDER BY v.date DESC";
+                // SELECT AJUSTADO
+                $query = "SELECT
+                            v.*,
+                            e.name AS empresa_nome,
+                            v.empresa_livre,
+                            c.nome AS cidade_nome,
+                            u.name AS consultor_nome,
+                            CASE
+                                WHEN v.status = 'AGENDADA' AND v.date < NOW() THEN 'ATRASADA'
+                                ELSE v.status
+                            END AS status_calculado
+                        FROM visitas v
+                        LEFT JOIN empresas e ON v.company_id = e.id
+                        LEFT JOIN cidades c ON v.city_id = c.id_cidade
+                        LEFT JOIN usuarios u ON v.created_by = u.id
+                        $whereClause
+                        ORDER BY v.date DESC";
 
                 $stmt = $db->prepare($query);
                 $stmt->execute($params);
