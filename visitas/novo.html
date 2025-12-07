@@ -36,29 +36,16 @@
 
                 <form id="visitaForm" class="form-content">
                     <div class="form-grid">
-                        <!-- Campo de busca de empresa -->
-                        <div class="form-group full-width">
-                            <label for="empresaSearch">BUSCAR EMPRESA *</label>
-                            <div class="search-container">
-                                <input type="text" id="empresaSearch"
-                                    placeholder="DIGITE O NOME, CNPJ, RESPONSÁVEL OU CIDADE DA EMPRESA..."
-                                    autocomplete="off" />
-                                <button type="button" id="searchBtn" class="btn-search">BUSCAR</button>
-                            </div>
-                            <div id="empresaResults" class="search-results" style="display: none;"></div>
-                        </div>
-
-                        <!-- Campos hidden para empresa e cidade -->
-                        <input type="hidden" id="company_id" name="company_id" required>
-                        <input type="hidden" id="city_id" name="city_id" required>
 
                         <div class="form-group">
                             <label for="type">TIPO DE VISITA *</label>
                             <select id="type" name="type" required>
+                                <option value="">SELECIONE...</option>
                                 <option value="COMERCIAL">COMERCIAL</option>
                                 <option value="TÉCNICA">TÉCNICA</option>
                                 <option value="RELACIONAMENTO">RELACIONAMENTO</option>
                                 <option value="TRABALHO INTERNO">TRABALHO INTERNO</option>
+                                <option value="PROSPECÇÃO DE CLIENTE">PROSPECÇÃO DE CLIENTE</option>
                                 <option value="OUTROS">OUTROS</option>
                             </select>
                         </div>
@@ -68,64 +55,67 @@
                             <input type="datetime-local" id="date" name="date" required>
                         </div>
 
+                        <div class="form-group full-width" id="empresaBuscaContainer">
+                            <label for="empresaSearch">BUSCAR EMPRESA *</label>
+                            <div class="search-container">
+                                <input type="text" id="empresaSearch"
+                                       placeholder="DIGITE O NOME, CNPJ, RESPONSÁVEL OU CIDADE DA EMPRESA..."
+                                       autocomplete="off" />
+                                <button type="button" id="searchBtn" class="btn-search">BUSCAR</button>
+                            </div>
+                            <div id="empresaResults" class="search-results" style="display: none;"></div>
+                        </div>
+
+                        <div class="form-group full-width" id="empresaManualContainer" style="display: none;">
+                            <label for="empresaManual">NOME DA EMPRESA (PROSPECÇÃO) *</label>
+                            <input type="text" id="empresaManual" name="empresa_livre"
+                                   placeholder="DIGITE O NOME DA EMPRESA QUE ESTÁ PROSPECTANDO..."
+                                   autocomplete="off" />
+                        </div>
+
+                        <input type="hidden" id="company_id" name="company_id">
+                        <input type="hidden" id="city_id" name="city_id">
+                        <input type="hidden" id="is_prospeccao" name="is_prospeccao" value="0">
+
+                        <!-- Novo campo retroativa -->
+                        <input type="hidden" id="is_retroativa" name="is_retroativa" value="0">
+
                         <div class="form-group full-width">
                             <label for="objetivo">OBJETIVO DA VISITA</label>
                             <textarea id="objetivo" name="objetivo" rows="3"
-                                placeholder="DESCREVA O OBJETIVO DA VISITA..."></textarea>
+                                      placeholder="DESCREVA O OBJETIVO DA VISITA..."></textarea>
                         </div>
                     </div>
 
-                    <!-- Informações da Empresa Selecionada -->
                     <div id="empresaInfo" class="empresa-info" style="display: none;">
                         <h3>INFORMAÇÕES DA EMPRESA SELECIONADA</h3>
                         <div class="info-grid">
-                            <div class="info-item">
-                                <strong>NOME:</strong>
-                                <span id="empresaNome">-</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>CNPJ:</strong>
-                                <span id="empresaCnpj">-</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>CIDADE:</strong>
-                                <span id="empresaCidade">-</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>ENDEREÇO:</strong>
-                                <span id="empresaEndereco">-</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>TELEFONE:</strong>
-                                <span id="empresaTelefone">-</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>WHATSAPP:</strong>
-                                <span id="empresaWhatsapp">-</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>RESPONSÁVEL:</strong>
-                                <span id="empresaResponsavel">-</span>
-                            </div>
+                            <div class="info-item"><strong>NOME:</strong> <span id="empresaNome">-</span></div>
+                            <div class="info-item"><strong>CNPJ:</strong> <span id="empresaCnpj">-</span></div>
+                            <div class="info-item"><strong>CIDADE:</strong> <span id="empresaCidade">-</span></div>
+                            <div class="info-item"><strong>ENDEREÇO:</strong> <span id="empresaEndereco">-</span></div>
+                            <div class="info-item"><strong>TELEFONE:</strong> <span id="empresaTelefone">-</span></div>
+                            <div class="info-item"><strong>WHATSAPP:</strong> <span id="empresaWhatsapp">-</span></div>
+                            <div class="info-item"><strong>RESPONSÁVEL:</strong> <span id="empresaResponsavel">-</span></div>
                         </div>
                     </div>
 
-                    <!-- Aviso especial para Trabalho Interno -->
                     <div id="trabalhoInternoInfo" class="trabalho-interno-info" style="display: none;">
                         <div class="alert alert-info">
-                            <h4>📋 TRABALHO INTERNO CHB</h4>
-                            <p>Esta visita será registrada como trabalho interno da empresa CHB. Certifique-se de:</p>
-                            <ul>
-                                <li>Descrever detalhadamente o objetivo no campo acima</li>
-                                <li>Registrar todas as atividades realizadas no check-in</li>
-                                <li>Documentar resultados e próximos passos</li>
-                            </ul>
+                            <h4>TRABALHO INTERNO CHB</h4>
+                            <p>Descreva detalhadamente o objetivo no campo acima.</p>
+                        </div>
+                    </div>
+
+                    <div id="prospeccaoInfo" class="trabalho-interno-info" style="display: none;">
+                        <div class="alert alert-warning">
+                            <h4>PROSPECÇÃO DE CLIENTE</h4>
+                            <p>Você pode digitar empresas ainda não cadastradas.</p>
                         </div>
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" onclick="window.location.href='../visitas.html'"
-                            class="btn-secondary">CANCELAR</button>
+                        <button type="button" onclick="window.location.href='../visitas.html'" class="btn-secondary">CANCELAR</button>
                         <button type="button" id="saveDraftBtn" class="btn-warning">SALVAR RASCUNHO</button>
                         <button type="button" id="clearDraftBtn" class="btn-danger">LIMPAR RASCUNHO</button>
                         <button type="submit" class="btn-primary">AGENDAR VISITA</button>
@@ -139,163 +129,30 @@
     <script src="../assets/js/visita-form-novo.js"></script>
 
     <style>
-        .search-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
+        .search-container { display: flex; gap: 10px; margin-bottom: 10px; }
+        .search-container input { flex: 1; }
+        .btn-search, .btn-warning, .btn-danger, .btn-primary, .btn-secondary {
+            padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; white-space: nowrap;
         }
-
-        .search-container input {
-            flex: 1;
-        }
-
-        .btn-search,
-        .btn-warning,
-        .btn-danger,
-        .btn-primary,
-        .btn-secondary {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .btn-search {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .btn-search:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-warning {
-            background-color: #ffc107;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background-color: #e0a800;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-
-        .btn-primary {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #218838;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-
-        .search-results {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: white;
-            margin-top: 5px;
-        }
-
-        .search-result-item {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .search-result-item:hover {
-            background-color: #f8f9fa;
-        }
-
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-
-        .result-name {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .result-details {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
-        .trabalho-interno-info {
-            margin: 20px 0;
-            padding: 0;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-
-        .alert-info {
-            background-color: #d1ecf1;
-            border: 1px solid #bee5eb;
-            color: #0c5460;
-        }
-
-        .alert h4 {
-            margin: 0 0 10px 0;
-            font-size: 1.1em;
-        }
-
-        .alert p {
-            margin: 0 0 10px 0;
-        }
-
-        .alert ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-
-        .alert li {
-            margin-bottom: 5px;
-        }
+        .btn-search { background: #007bff; color: white; }
+        .btn-warning { background: #ffc107; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-primary { background: #28a745; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .search-results { max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; background: white; }
+        .search-result-item { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .search-result-item:hover { background: #f8f9fa; }
+        .full-width { grid-column: 1 / -1; }
+        .alert { padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+        .alert-info { background: #d1ecf1; border: 1px solid #bee5eb; }
+        .alert-warning { background: #fff3cd; border: 1px solid #ffc107; }
     </style>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Bloqueia datas anteriores a hoje
-            const dateInput = document.getElementById("date");
-            if (dateInput) {
-                const now = new Date();
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                dateInput.min = `${year}-${month}-${day}T${hours}:${minutes}`;
-            }
 
-            // Carrega rascunho salvo, se existir
+            // >>> REMOVIDO O BLOQUEIO DE DATAS RETROATIVAS <<<
+
             const draft = localStorage.getItem("visitaDraft");
             if (draft) {
                 const data = JSON.parse(draft);
@@ -305,9 +162,10 @@
                 document.getElementById("type").value = data.type || "";
                 document.getElementById("date").value = data.date || "";
                 document.getElementById("objetivo").value = data.objetivo || "";
+                document.getElementById("empresaManual").value = data.empresaManual || "";
+                document.getElementById("is_prospeccao").value = data.is_prospeccao || "0";
             }
 
-            // Salvar rascunho
             document.getElementById("saveDraftBtn").addEventListener("click", () => {
                 const draft = {
                     empresaSearch: document.getElementById("empresaSearch").value,
@@ -315,20 +173,30 @@
                     city_id: document.getElementById("city_id").value,
                     type: document.getElementById("type").value,
                     date: document.getElementById("date").value,
-                    objetivo: document.getElementById("objetivo").value
+                    objetivo: document.getElementById("objetivo").value,
+                    empresaManual: document.getElementById("empresaManual").value,
+                    is_prospeccao: document.getElementById("is_prospeccao").value
                 };
                 localStorage.setItem("visitaDraft", JSON.stringify(draft));
                 alert("Rascunho salvo com sucesso!");
             });
 
-            // Limpar rascunho
             document.getElementById("clearDraftBtn").addEventListener("click", () => {
                 localStorage.removeItem("visitaDraft");
                 document.getElementById("visitaForm").reset();
                 alert("Rascunho limpo com sucesso!");
             });
+
+            // >>> MARCA VISITA RETROATIVA <<<
+            document.getElementById("visitaForm").addEventListener("submit", function () {
+                const dataEscolhida = new Date(document.getElementById("date").value);
+                const agora = new Date();
+
+                document.getElementById("is_retroativa").value =
+                    dataEscolhida < agora ? "1" : "0";
+            });
+
         });
     </script>
 </body>
-
 </html>

@@ -52,7 +52,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                           LEFT JOIN cidades c ON v.city_id = c.id_cidade
                           LEFT JOIN usuarios u ON v.created_by = u.id
                           WHERE v.id = ?";
-                
+
                 $stmt = $db->prepare($query);
                 $stmt->execute([$visitaId]);
                 $visita = $stmt->fetch();
@@ -79,8 +79,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 // 🔥 NOVA LÓGICA: Consultor vê visitas de empresas onde é principal OU secundário
                 if ($user['role'] === 'CONSULTOR') {
                     $whereClause .= " AND (v.created_by = ? OR EXISTS (
-                        SELECT 1 FROM empresas e2 
-                        WHERE e2.id = v.company_id 
+                        SELECT 1 FROM empresas e2
+                        WHERE e2.id = v.company_id
                         AND (e2.consultant = ? OR e2.consultant_secondary = ?)
                     ))";
                     $params[] = $user['user_id'];
@@ -104,6 +104,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     $params[] = $_GET['data_fim'];
                 }
 
+                if (isset($_GET['company_id'])) {
+                    $whereClause .= " AND v.company_id = ?";
+                    $params[] = $_GET['company_id'];
+                }
+
                 if (isset($_GET['city_id'])) {
                     $whereClause .= " AND v.city_id = ?";
                     $params[] = $_GET['city_id'];
@@ -121,7 +126,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
                 $query = "SELECT v.*, e.name as empresa_nome, c.nome as cidade_nome,
                                  u.name as consultor_nome,
-                                 CASE 
+                                 CASE
                                     WHEN v.status = 'AGENDADA' AND v.date < NOW() THEN 'ATRASADA'
                                     ELSE v.status
                                  END as status_calculado
@@ -156,8 +161,25 @@ switch ($_SERVER['REQUEST_METHOD']) {
     case 'POST':
         try {
             $input = json_decode(file_get_contents('php://input'), true);
-            
-            $required = ['company_id', 'city_id', 'date', 'type'];
+
+            $isProspeccao = isset($input['is_prospeccao']) && $input['is_prospeccao'] == '1';
+
+            if ($isProspeccao) {
+                // Para prospecção, empresa_livre é obrigatório
+                if (!isset($input['empresa_livre']) || empty(trim($input['empresa_livre']))) {
+                    http_response_code(400);
+                    echo json_encode(['error' => 'NOME DA EMPRESA É OBRIGATÓRIO PARA PROSPECÇÃO']);
+                    exit;
+                }
+
+                // Para prospecção, company_id é opcional (pode ser null)
+                // Mas city_id é obrigatório
+                $required = ['city_id', 'date', 'type'];
+            } else {
+                // Para visitas normais, company_id e city_id são obrigatórios
+                $required = ['company_id', 'city_id', 'date', 'type'];
+            }
+
             foreach ($required as $field) {
                 if (!isset($input[$field]) || empty($input[$field])) {
                     http_response_code(400);
@@ -167,7 +189,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             }
 
             // Validar tipos de visita permitidos
-            $tiposPermitidos = ['COMERCIAL', 'TÉCNICA', 'RELACIONAMENTO', 'TRABALHO INTERNO', 'OUTROS'];
+            $tiposPermitidos = ['COMERCIAL', 'TÉCNICA', 'RELACIONAMENTO', 'TRABALHO INTERNO', 'OUTROS', 'PROSPECÇÃO DE CLIENTE'];
             if (!in_array($input['type'], $tiposPermitidos)) {
                 http_response_code(400);
                 echo json_encode(['error' => 'TIPO DE VISITA INVÁLIDO']);
@@ -183,69 +205,94 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 }
             }
 
-            // 🔥 NOVA LÓGICA: Verificar se empresa existe e se usuário tem permissão (principal OU secundário)
-            $empresaQuery = "SELECT id, consultant, consultant_secondary FROM empresas WHERE id = ?";
-            $empresaStmt = $db->prepare($empresaQuery);
-            $empresaStmt->execute([$input['company_id']]);
-            $empresa = $empresaStmt->fetch();
+            $companyId = null;
 
-            if (!$empresa) {
-                http_response_code(400);
-                echo json_encode(['error' => 'EMPRESA NÃO ENCONTRADA']);
-                exit;
+            if (!$isProspeccao) {
+                $companyId = $input['company_id'];
+            } else {
+                // Se vier "", transforma em null
+                if (isset($input['company_id']) && $input['company_id'] !== "") {
+                    $companyId = $input['company_id'];
+                } else {
+                    $companyId = null;
+                }
             }
 
-            // Para trabalho interno, permitir qualquer consultor (flexibilidade para CHB)
-            if ($input['type'] !== 'TRABALHO INTERNO') {
-                if ($user['role'] === 'CONSULTOR') {
-                    // 🔥 VERIFICAR SE É CONSULTOR PRINCIPAL OU SECUNDÁRIO
-                    $temPermissao = ($empresa['consultant'] == $user['user_id']) || 
-                                   ($empresa['consultant_secondary'] == $user['user_id']);
-                    
-                    if (!$temPermissao) {
-                        http_response_code(403);
-                        echo json_encode([
-                            'error' => 'SEM PERMISSÃO PARA CRIAR VISITA PARA ESTA EMPRESA',
-                            'debug' => [
-                                'user_id' => $user['user_id'],
-                                'consultant' => $empresa['consultant'],
-                                'consultant_secondary' => $empresa['consultant_secondary']
-                            ]
-                        ]);
-                        exit;
+            $empresaLivre = $isProspeccao ? trim($input['empresa_livre']) : null;
+            $companyName = null;
+
+            if ($companyId) {
+                $empresaQuery = "SELECT id, name, consultant, consultant_secondary FROM empresas WHERE id = ?";
+                $empresaStmt = $db->prepare($empresaQuery);
+                $empresaStmt->execute([$companyId]);
+                $empresa = $empresaStmt->fetch();
+
+                if (!$empresa) {
+                    http_response_code(400);
+                    echo json_encode(['error' => 'EMPRESA NÃO ENCONTRADA']);
+                    exit;
+                }
+
+                $companyName = $empresa['name'];
+
+                // Para trabalho interno, permitir qualquer consultor
+                if ($input['type'] !== 'TRABALHO INTERNO' && $input['type'] !== 'PROSPECÇÃO DE CLIENTE') {
+                    if ($user['role'] === 'CONSULTOR') {
+                        $temPermissao = ($empresa['consultant'] == $user['user_id']) ||
+                                       ($empresa['consultant_secondary'] == $user['user_id']);
+
+                        if (!$temPermissao) {
+                            http_response_code(403);
+                            echo json_encode([
+                                'error' => 'SEM PERMISSÃO PARA CRIAR VISITA PARA ESTA EMPRESA',
+                                'debug' => [
+                                    'user_id' => $user['user_id'],
+                                    'consultant' => $empresa['consultant'],
+                                    'consultant_secondary' => $empresa['consultant_secondary']
+                                ]
+                            ]);
+                            exit;
+                        }
                     }
                 }
             }
 
-            // Verificar se é visita retroativa (data no passado)
+            // Verificar se é visita retroativa
             $visitaDate = new DateTime($input['date']);
             $now = new DateTime();
             $isRetroativa = $visitaDate < $now;
 
-            // Iniciar transação para sequenciamento
+            // Iniciar transação
             $db->beginTransaction();
 
             try {
-                // Buscar próximo número de sequência
-                $seqQuery = "SELECT COALESCE(MAX(visit_sequence), 0) + 1 as next_seq 
-                            FROM visitas 
-                            WHERE company_id = ? AND type = ? 
+                $seqQuery = "SELECT COALESCE(MAX(visit_sequence), 0) + 1 as next_seq
+                            FROM visitas
+                            WHERE type = ? " . ($companyId ? "AND company_id = ?" : "") . "
                             FOR UPDATE";
                 $seqStmt = $db->prepare($seqQuery);
-                $seqStmt->execute([$input['company_id'], $input['type']]);
+
+                if ($companyId) {
+                    $seqStmt->execute([$input['type'], $companyId]);
+                } else {
+                    $seqStmt->execute([$input['type']]);
+                }
+
                 $nextSeq = $seqStmt->fetch()['next_seq'];
 
-                // Definir status baseado na data
                 $status = $input['status'] ?? ($isRetroativa ? 'AGENDADA' : 'AGENDADA');
 
-                // Inserir visita
-                $query = "INSERT INTO visitas (company_id, city_id, date, type, visit_sequence, 
+                $query = "INSERT INTO visitas (company_id, empresa_livre, company_name, is_prospeccao,
+                          city_id, date, type, visit_sequence,
                           objetivo, meta_estabelecida, status, created_by)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                 $stmt = $db->prepare($query);
                 $result = $stmt->execute([
-                    $input['company_id'],
+                    $companyId,
+                    $empresaLivre,
+                    $companyName,
+                    $isProspeccao ? 1 : 0,
                     $input['city_id'],
                     $input['date'],
                     $input['type'],
@@ -259,31 +306,35 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 if ($result) {
                     $visitaId = $db->lastInsertId();
                     $db->commit();
-                    
+
                     $response = [
-                        'success' => true, 
-                        'id' => $visitaId, 
+                        'success' => true,
+                        'id' => $visitaId,
                         'sequence' => $nextSeq
                     ];
-                    
-                    // Adicionar aviso se for retroativa
+
+                    if ($isProspeccao) {
+                        $response['prospeccao'] = true;
+                        $response['message'] = 'PROSPECÇÃO DE CLIENTE AGENDADA COM SUCESSO';
+                    }
+
                     if ($isRetroativa) {
                         $response['warning'] = 'VISITA RETROATIVA CRIADA - Data no passado';
                         $response['retroativa'] = true;
                     }
 
-                    // Adicionar mensagem especial para trabalho interno
                     if ($input['type'] === 'TRABALHO INTERNO') {
                         $response['message'] = 'TRABALHO INTERNO CHB AGENDADO COM SUCESSO';
                         $response['trabalho_interno'] = true;
                     }
 
-                    // 🔥 INDICAR SE FOI CRIADA POR CONSULTOR SECUNDÁRIO
-                    if ($user['role'] === 'CONSULTOR' && $empresa['consultant_secondary'] == $user['user_id'] && $empresa['consultant'] != $user['user_id']) {
+                    if ($user['role'] === 'CONSULTOR' && isset($empresa) &&
+                        $empresa['consultant_secondary'] == $user['user_id'] &&
+                        $empresa['consultant'] != $user['user_id']) {
                         $response['consultor_secundario'] = true;
                         $response['message'] = 'VISITA CRIADA COMO CONSULTOR SECUNDÁRIO';
                     }
-                    
+
                     echo json_encode($response);
                 } else {
                     throw new Exception('Erro ao inserir visita');
@@ -327,7 +378,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 $temPermissao = ($visita['created_by'] == $user['user_id']) ||
                                ($visita['consultant'] == $user['user_id']) ||
                                ($visita['consultant_secondary'] == $user['user_id']);
-                
+
                 if (!$temPermissao) {
                     http_response_code(403);
                     echo json_encode([
@@ -350,13 +401,13 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     echo json_encode(['error' => 'VISITAS REMARCADAS NÃO PODEM SER REMARCADAS NOVAMENTE']);
                     exit;
                 }
-                
+
                 if ($visita['status'] === 'REALIZADA') {
                     http_response_code(400);
                     echo json_encode(['error' => 'VISITAS REALIZADAS NÃO PODEM SER REMARCADAS']);
                     exit;
                 }
-                
+
                 if ($visita['status'] === 'CANCELADA') {
                     http_response_code(400);
                     echo json_encode(['error' => 'VISITAS CANCELADAS NÃO PODEM SER REMARCADAS']);
@@ -364,7 +415,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 }
 
                 $input = json_decode(file_get_contents('php://input'), true);
-                
+
                 if (!isset($input['date'])) {
                     http_response_code(400);
                     echo json_encode(['error' => 'NOVA DATA É OBRIGATÓRIA']);
@@ -372,19 +423,19 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 }
 
                 // Permitir remarcar para qualquer data (passado ou futuro)
-                $query = "UPDATE visitas SET date = ?, status = 'REMARCADA', updated_at = CURRENT_TIMESTAMP 
+                $query = "UPDATE visitas SET date = ?, status = 'REMARCADA', updated_at = CURRENT_TIMESTAMP
                           WHERE id = ?";
                 $stmt = $db->prepare($query);
                 $result = $stmt->execute([$input['date'], $visitaId]);
 
                 if ($result) {
                     $response = ['success' => true];
-                    
+
                     // Mensagem especial para trabalho interno
                     if ($visita['type'] === 'TRABALHO INTERNO') {
                         $response['message'] = 'TRABALHO INTERNO CHB REMARCADO COM SUCESSO';
                     }
-                    
+
                     echo json_encode($response);
                 } else {
                     throw new Exception('Erro ao remarcar visita');
@@ -398,19 +449,19 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     exit;
                 }
 
-                $query = "UPDATE visitas SET status = 'CANCELADA', updated_at = CURRENT_TIMESTAMP 
+                $query = "UPDATE visitas SET status = 'CANCELADA', updated_at = CURRENT_TIMESTAMP
                           WHERE id = ?";
                 $stmt = $db->prepare($query);
                 $result = $stmt->execute([$visitaId]);
 
                 if ($result) {
                     $response = ['success' => true];
-                    
+
                     // Mensagem especial para trabalho interno
                     if ($visita['type'] === 'TRABALHO INTERNO') {
                         $response['message'] = 'TRABALHO INTERNO CHB CANCELADO';
                     }
-                    
+
                     echo json_encode($response);
                 } else {
                     throw new Exception('Erro ao cancelar visita');

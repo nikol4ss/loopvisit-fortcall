@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <div class="app-container">
         <header class="app-header">
             <div class="header-content">
@@ -58,7 +59,14 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>EMPRESAS</label>
+                        <select id="empresaFilter">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <button id="applyFilters" class="btn-primary">FILTRAR</button>
+                        <button id="exportExcel" class="btn-secondary">EXPORTAR</button>
                         <button id="clearFilters" class="btn-secondary">LIMPAR</button>
                     </div>
                 </div>

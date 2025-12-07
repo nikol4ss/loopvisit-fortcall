@@ -1,5 +1,6 @@
 // Armazenamento de motivos persistentes
 let cancelReasons = JSON.parse(localStorage.getItem("cancelReasons") || "{}");
+let visitasCache = []; // Armazena dados carregados para exportação
 
 document.addEventListener("DOMContentLoaded", async () => {
   if (!window.checkAuth()) return;
@@ -11,14 +12,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("relatoriosLink").style.display = "block";
   }
 
-  // Event listeners
   document.getElementById("logoutBtn").addEventListener("click", window.logout);
+
   document
     .getElementById("applyFilters")
     .addEventListener("click", loadVisitas);
   document
     .getElementById("clearFilters")
     .addEventListener("click", clearFilters);
+  document
+    .getElementById("exportExcel")
+    .addEventListener("click", exportarExcel);
 
   document
     .getElementById("confirmCancel")
@@ -27,8 +31,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     .getElementById("closeCancel")
     .addEventListener("click", fecharModalCancelamento);
 
+  await carregarEmpresasFiltro();
   await loadVisitas();
 });
+
+const carregarEmpresasFiltro = async () => {
+  try {
+    const empresas = await window.apiCall("/empresas.php");
+
+    const select = document.getElementById("empresaFilter");
+    select.innerHTML = '<option value="">Todas</option>';
+
+    empresas.data.forEach((e) => {
+      const opt = document.createElement("option");
+      opt.value = e.id;
+      opt.textContent = e.name;
+      select.appendChild(opt);
+    });
+  } catch (error) {
+    console.error("Erro ao carregar empresas", error);
+  }
+};
 
 const loadVisitas = async () => {
   try {
@@ -38,7 +61,9 @@ const loadVisitas = async () => {
     const dataFim = document.getElementById("dataFim").value;
     const status = document.getElementById("statusFilter").value;
     const tipo = document.getElementById("tipoFilter").value;
+    const empresa = document.getElementById("empresaFilter").value;
 
+    if (empresa) params.append("company_id", empresa);
     if (dataInicio) params.append("data_inicio", dataInicio);
     if (dataFim) params.append("data_fim", dataFim);
     if (status) params.append("status", status);
@@ -47,6 +72,8 @@ const loadVisitas = async () => {
     const response = await window.apiCall(`/visitas.php?${params}`);
     const tbody = document.getElementById("visitasTableBody");
     tbody.innerHTML = "";
+
+    visitasCache = response.data;
 
     if (response.data.length === 0) {
       tbody.innerHTML =
@@ -62,7 +89,6 @@ const loadVisitas = async () => {
         .replace("ç", "c")
         .replace("ã", "a");
 
-      // Badge + motivo abaixo, se cancelado
       let statusContent = `<span class="status-badge status-${statusClass}">${visita.status_calculado}</span>`;
       if (visita.status === "CANCELADA" && cancelReasons[visita.id]) {
         statusContent += `<br><small class="cancel-motivo">${
@@ -97,17 +123,15 @@ const loadVisitas = async () => {
       }
 
       row.innerHTML = `
-        <td>${visita.empresa_nome}</td>
+        <td>${
+          visita.is_prospeccao == 1 ? visita.empresa_livre : visita.empresa_nome
+        }</td>
         <td>${dataFormatada}</td>
         <td>${visita.type}</td>
         <td>${visita.visit_sequence}</td>
         <td>${visita.cidade_nome}</td>
         <td>${statusContent}</td>
-        <td>
-          <div class="action-buttons">
-            ${actions.join("")}
-          </div>
-        </td>
+        <td><div class="action-buttons">${actions.join("")}</div></td>
       `;
 
       tbody.appendChild(row);
@@ -122,9 +146,11 @@ const clearFilters = () => {
   document.getElementById("dataFim").value = "";
   document.getElementById("statusFilter").value = "";
   document.getElementById("tipoFilter").value = "";
+  document.getElementById("empresaFilter").value = "";
   loadVisitas();
 };
 
+// CHECK-IN / REMARCAR / VER
 const checkin = (visitaId) => {
   window.location.href = `visitas/checkin.html?id=${visitaId}`;
 };
@@ -137,7 +163,7 @@ const verCheckin = (visitaId) => {
   window.location.href = `visitas/checkin.html?id=${visitaId}&readonly=true`;
 };
 
-// CANCELAMENTO COM MOTIVO
+// CANCELAMENTO
 let visitaParaCancelar = null;
 
 const cancelar = (visitaId) => {
@@ -159,7 +185,6 @@ const confirmarCancelamento = async () => {
       headers: { "Content-Type": "application/json" },
     });
 
-    // Salvar motivo no localStorage
     cancelReasons[visitaParaCancelar] = motivo;
     localStorage.setItem("cancelReasons", JSON.stringify(cancelReasons));
 
@@ -176,7 +201,35 @@ const fecharModalCancelamento = () => {
   document.getElementById("cancelMotivo").value = "";
 };
 
-// Exportar funções para uso global
+// EXPORTAÇÃO PARA EXCEL
+const exportarExcel = () => {
+  if (visitasCache.length === 0) {
+    window.showError("NENHUMA VISITA PARA EXPORTAR");
+    return;
+  }
+
+  const data = visitasCache.map((v) => ({
+    Empresa:
+      v.is_prospeccao == 1
+        ? v.empresa_livre && v.empresa_livre.trim() !== ""
+          ? v.empresa_livre
+          : "PROSPECÇÃO"
+        : v.empresa_nome || "NÃO INFORMADO",
+    Data: new Date(v.date).toLocaleString("pt-BR"),
+    Tipo: v.type,
+    Sequencia: v.visit_sequence,
+    Cidade: v.cidade_nome,
+    Status: v.status_calculado,
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(wb, ws, "Visitas");
+  XLSX.writeFile(wb, "visitas.xlsx");
+};
+
+// Exportar funções globais
 window.checkin = checkin;
 window.remarcar = remarcar;
 window.verCheckin = verCheckin;
