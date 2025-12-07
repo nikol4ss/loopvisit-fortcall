@@ -41,6 +41,10 @@
                     <label>Consultor:</label>
                     <span id="consultorNome">Carregando...</span>
                 </div>
+                <div class="info-item">
+                    <label>Tipo da Visita:</label>
+                    <span id="tipoVisita">Carregando...</span>
+                </div>
             </div>
         </div>
 
@@ -56,6 +60,101 @@
                     placeholder="Descreva o que aconteceu durante a visita, principais pontos discutidos, próximos passos..."
                     required
                 ></textarea>
+            </div>
+
+            <!-- Adicionando seleção múltipla de motivos da visita -->
+            <div class="form-group">
+                <label>MOTIVOS DA VISITA *</label>
+                <div class="motivos-container">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="motivo" value="prospeccao">
+                        Cliente buscando novo fornecedor; já é atendido por concorrente
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="motivo" value="indicacao">
+                        Cliente vindo por indicação; estamos em negociação; alta probabilidade de fechamento
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="motivo" value="custo_beneficio">
+                        Cliente buscando custo-benefício
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="motivo" value="reativacao">
+                        Já foi cliente Fortcal, passou a comprar outras marcas; objetivo é reativação
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="motivo" value="manutencao">
+                        Cliente ativo; visita de manutenção de relacionamento
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="motivo" value="inadimplencia">
+                        Cliente com histórico de inadimplência; visita de ajuste e negociação
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="motivo" value="pos_venda">
+                        Acompanhamento de lavoura com produtos Fortcal aplicados (pós-venda técnico)
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="motivo" value="testemunha">
+                        Acompanhamento de áreas testemunha / comparação com concorrentes
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="motivo" value="evento">
+                        Convite para evento técnico / dia de campo
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="motivo" value="suporte_tecnico">
+                        Cliente buscando suporte técnico para revenda/distribuidor
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="motivo" value="outros" id="motivoOutros">
+                        Outros
+                    </label>
+                </div>
+
+                <!-- Campo de descrição para "Outros" -->
+                <div id="motivoOutrosDescricao" style="display: none; margin-top: 10px;">
+                    <label for="motivoOutrosTexto">DESCRIÇÃO (OBRIGATÓRIO) *</label>
+                    <textarea
+                        id="motivoOutrosTexto"
+                        name="motivo_outros_texto"
+                        rows="3"
+                        placeholder="Descreva o motivo da visita..."
+                    ></textarea>
+                </div>
+            </div>
+
+            <!-- Campos condicionais para VISITA TÉCNICA -->
+            <div id="camposTecnicos" style="display: none;">
+                <div class="form-group">
+                    <label for="propriedade">PROPRIEDADE / PROPRIETÁRIO *</label>
+                    <input
+                        type="text"
+                        id="propriedade"
+                        name="propriedade"
+                        placeholder="Nome da propriedade ou proprietário..."
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="objetivosTecnicos">PRINCIPAIS OBJETIVOS *</label>
+                    <textarea
+                        id="objetivosTecnicos"
+                        name="objetivos_tecnicos"
+                        rows="3"
+                        placeholder="Descreva os principais objetivos da visita técnica..."
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="observacoesTecnicas">OBSERVAÇÕES GERAIS</label>
+                    <textarea
+                        id="observacoesTecnicas"
+                        name="observacoes_tecnicas"
+                        rows="3"
+                        placeholder="Observações adicionais sobre a visita técnica..."
+                    ></textarea>
+                </div>
             </div>
 
             <div class="form-group">
@@ -99,18 +198,6 @@
                     <span class="label-right">10 - Muito Alto</span>
                 </div>
             </div>
-
-            <!-- <div class="form-group">
-                <label for="numero_os">NÚMERO DA OS</label>
-                <input
-                    type="text"
-                    id="numero_os"
-                    name="numero_os"
-                    placeholder="Ex: OS-2025-001, 12345, etc."
-                    class="form-input"
-                >
-                <small class="form-help">Informe o número da Ordem de Serviço se aplicável</small>
-            </div> -->
 
             <div class="form-group">
                 <label for="attachment">ANEXAR ARQUIVO (OPCIONAL)</label>

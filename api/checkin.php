@@ -29,9 +29,9 @@ $visitaId = (int)$pathParts[count($pathParts) - 1];
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
         try {
-            $query = "SELECT c.*, 
+            $query = "SELECT c.*,
                              CASE WHEN c.attachment IS NOT NULL AND c.attachment != '' THEN 1 ELSE 0 END as has_attachment
-                      FROM checkin c 
+                      FROM checkin c
                       WHERE c.visita_id = :visita_id";
 
             $stmt = $db->prepare($query);
@@ -41,12 +41,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
             $checkin = $stmt->fetch();
             if (!$checkin) {
                 // Criar checkin vazio se não existir
-                $insertQuery = "INSERT INTO checkin (visita_id, opportunity, negociacao, termometro, numero_os) 
-                               VALUES (:visita_id, 0, 0, 5, '')";
+                $insertQuery = "INSERT INTO checkin (visita_id, opportunity, negociacao, termometro)
+                               VALUES (:visita_id, 0, 0, 5)";
                 $insertStmt = $db->prepare($insertQuery);
                 $insertStmt->bindParam(':visita_id', $visitaId);
                 $insertStmt->execute();
-                
+
                 $checkin = [
                     'id' => $db->lastInsertId(),
                     'visita_id' => $visitaId,
@@ -54,8 +54,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     'has_attachment' => 0,
                     'opportunity' => 0,
                     'negociacao' => 0,
-                    'termometro' => 5,
-                    'numero_os' => ''
+                    'termometro' => 5
                 ];
             }
 
@@ -70,10 +69,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
     case 'PUT':
         try {
             $input = json_decode(file_get_contents('php://input'), true);
-            
-            error_log("=== CHECKIN SIMPLES API DEBUG ===");
+
+            error_log("=== CHECKIN API DEBUG ===");
             error_log("Dados recebidos: " . json_encode($input));
-            
+
             // Verificar se checkin já existe
             $checkQuery = "SELECT id FROM checkin WHERE visita_id = :visita_id";
             $checkStmt = $db->prepare($checkQuery);
@@ -86,8 +85,18 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 $fields = [];
                 $params = [':visita_id' => $visitaId];
 
-                // Campos permitidos incluindo os novos campos de negociação
-                $allowedFields = ['summary', 'opportunity', 'negociacao', 'termometro', 'numero_os', 'is_draft'];
+                $allowedFields = [
+                    'summary',
+                    'opportunity',
+                    'negociacao',
+                    'termometro',
+                    'is_draft',
+                    'motivos_visita',
+                    'motivo_outros_texto',
+                    'propriedade',
+                    'objetivos_tecnicos',
+                    'observacoes_tecnicas'
+                ];
 
                 foreach ($allowedFields as $field) {
                     if (array_key_exists($field, $input)) {
@@ -97,28 +106,28 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 }
 
                 if (!empty($fields)) {
-                    $query = "UPDATE checkin SET " . implode(', ', $fields) . ", updated_at = CURRENT_TIMESTAMP 
+                    $query = "UPDATE checkin SET " . implode(', ', $fields) . ", updated_at = CURRENT_TIMESTAMP
                           WHERE visita_id = :visita_id";
-                    
+
                     error_log("Query UPDATE: " . $query);
                     error_log("Parâmetros: " . json_encode($params));
-                    
+
                     $stmt = $db->prepare($query);
-                    
+
                     foreach ($params as $key => $value) {
                         $stmt->bindValue($key, $value);
                     }
 
                     if ($stmt->execute()) {
-                        // CORREÇÃO: Se não é mais rascunho, atualizar status da visita
+                        // Se não é mais rascunho, atualizar status da visita
                         if (isset($input['is_draft']) && $input['is_draft'] == 0) {
                             error_log("🔄 Atualizando status da visita para REALIZADA");
-                            
-                            $updateVisitQuery = "UPDATE visitas SET status = 'REALIZADA', updated_at = CURRENT_TIMESTAMP 
+
+                            $updateVisitQuery = "UPDATE visitas SET status = 'REALIZADA', updated_at = CURRENT_TIMESTAMP
                                                 WHERE id = :visita_id";
                             $updateVisitStmt = $db->prepare($updateVisitQuery);
                             $updateVisitStmt->bindParam(':visita_id', $visitaId);
-                            
+
                             if ($updateVisitStmt->execute()) {
                                 error_log("✅ Status da visita atualizado para REALIZADA");
                             } else {
@@ -141,8 +150,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
             } else {
                 // Insert
                 $input['visita_id'] = $visitaId;
-                
-                // Garantir valores padrão para os novos campos
+
+                // Garantir valores padrão
                 if (!isset($input['opportunity'])) {
                     $input['opportunity'] = 0;
                 }
@@ -152,46 +161,43 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 if (!isset($input['termometro'])) {
                     $input['termometro'] = 5;
                 }
-                if (!isset($input['numero_os'])) {
-                    $input['numero_os'] = '';
-                }
                 if (!isset($input['is_draft'])) {
                     $input['is_draft'] = 1;
                 }
-                
+
                 $fields = array_keys($input);
                 $placeholders = array_map(function($field) { return ":$field"; }, $fields);
-                
-                $query = "INSERT INTO checkin (" . implode(', ', $fields) . ") 
+
+                $query = "INSERT INTO checkin (" . implode(', ', $fields) . ")
                           VALUES (" . implode(', ', $placeholders) . ")";
-                
+
                 error_log("Query INSERT: " . $query);
                 error_log("Dados para INSERT: " . json_encode($input));
-                
+
                 $stmt = $db->prepare($query);
                 foreach ($input as $key => $value) {
                     $stmt->bindValue(":$key", $value);
                 }
 
                 if ($stmt->execute()) {
-                    // CORREÇÃO: Se não é rascunho, atualizar status da visita
+                    // Se não é rascunho, atualizar status da visita
                     if (isset($input['is_draft']) && $input['is_draft'] == 0) {
                         error_log("🔄 Atualizando status da visita para REALIZADA (INSERT)");
-                        
-                        $updateVisitQuery = "UPDATE visitas SET status = 'REALIZADA', updated_at = CURRENT_TIMESTAMP 
+
+                        $updateVisitQuery = "UPDATE visitas SET status = 'REALIZADA', updated_at = CURRENT_TIMESTAMP
                                             WHERE id = :visita_id";
                         $updateVisitStmt = $db->prepare($updateVisitQuery);
                         $updateVisitStmt->bindParam(':visita_id', $visitaId);
-                        
+
                         if ($updateVisitStmt->execute()) {
                             error_log("✅ Status da visita atualizado para REALIZADA (INSERT)");
                         } else {
                             error_log("❌ Erro ao atualizar status da visita (INSERT): " . json_encode($updateVisitStmt->errorInfo()));
                         }
                     }
-                    
+
                     echo json_encode([
-                        'success' => true, 
+                        'success' => true,
                         'id' => $db->lastInsertId(),
                         'message' => isset($input['is_draft']) && $input['is_draft'] == 0 ? 'CHECK-IN FINALIZADO E VISITA MARCADA COMO REALIZADA' : 'CHECK-IN SALVO'
                     ]);
