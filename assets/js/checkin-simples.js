@@ -73,7 +73,7 @@ const loadVisitaData = async () => {
     visitaData = response.data;
     console.log("📋 Dados da visita extraídos:", visitaData);
 
-    const empresa = visitaData.empresa_nome || visitaData.empresa_livre ;
+    const empresa = visitaData.empresa_nome || visitaData.empresa_livre;
     const dataVisita = visitaData.date || "N/A";
     const consultor = visitaData.consultor_nome || "N/A";
     const tipoVisita = visitaData.type || "N/A";
@@ -503,12 +503,6 @@ const salvarRascunho = async () => {
   }
 
   try {
-    const summary = document.getElementById("summary").value.trim();
-    if (!summary) {
-      window.showError("RESUMO É OBRIGATÓRIO PARA SALVAR RASCUNHO");
-      return;
-    }
-
     const formData = collectFormData();
     formData.is_draft = 1;
 
@@ -549,12 +543,6 @@ const concluirCheckin = async () => {
   }
 
   // Validar campos obrigatórios
-  const summary = document.getElementById("summary").value.trim();
-  if (!summary) {
-    window.showError("RESUMO É OBRIGATÓRIO PARA CONCLUIR CHECK-IN");
-    return;
-  }
-
   const motivosSelecionados = document.querySelectorAll(
     'input[name="motivo"]:checked'
   );

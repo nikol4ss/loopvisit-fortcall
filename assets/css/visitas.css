@@ -1,0 +1,41 @@
+/* Badge para visitas retroativas */
+.retroativa-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 8px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
+  animation: pulse-orange 2s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+@keyframes pulse-orange {
+  0%,
+  100% {
+    box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.5);
+  }
+}
+
+/* Ajuste para status com badge retroativa */
+.status-badge {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+  .retroativa-badge {
+    display: block;
+    margin-left: 0;
+    margin-top: 4px;
+    width: fit-content;
+  }
+}

@@ -55,7 +55,6 @@ try {
 
     // Se for requisição para visitas detalhadas
     if (isset($_GET['action']) && $_GET['action'] === 'visitas') {
-        // CORREÇÃO: Adicionar JOIN com checkin e usar campos corretos
         $query = "
            SELECT
             v.id,
@@ -65,6 +64,7 @@ try {
             v.status,
             v.objetivo,
             v.meta_estabelecida,
+            v.is_retroativa,
 
             /* REGRA DE EXIBIÇÃO DO NOME */
             CASE

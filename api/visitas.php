@@ -46,6 +46,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 $query = "SELECT
                     v.*,
                     v.empresa_livre,
+                    v.is_retroativa,
                     e.name as empresa_nome,
                     e.address as empresa_endereco,
                     e.phone as empresa_telefone,
@@ -58,7 +59,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 LEFT JOIN cidades c ON v.city_id = c.id_cidade
                 LEFT JOIN usuarios u ON v.created_by = u.id
                 WHERE v.id = ?";
-
 
                 $stmt = $db->prepare($query);
                 $stmt->execute([$visitaId]);
@@ -131,9 +131,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     $params[] = $_GET['consultor'];
                 }
 
-                // SELECT AJUSTADO
                 $query = "SELECT
                             v.*,
+                            v.is_retroativa,
                             e.name AS empresa_nome,
                             v.empresa_livre,
                             c.nome AS cidade_nome,
@@ -269,10 +269,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 }
             }
 
-            // Verificar se é visita retroativa
             $visitaDate = new DateTime($input['date']);
             $now = new DateTime();
-            $isRetroativa = $visitaDate < $now;
+            $isRetroativa = $visitaDate < $now ? 1 : 0;
 
             // Iniciar transação
             $db->beginTransaction();
@@ -292,12 +291,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
                 $nextSeq = $seqStmt->fetch()['next_seq'];
 
-                $status = $input['status'] ?? ($isRetroativa ? 'AGENDADA' : 'AGENDADA');
+                $status = $input['status'] ?? 'AGENDADA';
 
-                $query = "INSERT INTO visitas (company_id, empresa_livre, company_name, is_prospeccao,
+                $query = "INSERT INTO visitas (company_id, empresa_livre, company_name, is_prospeccao, is_retroativa,
                           city_id, date, type, visit_sequence,
                           objetivo, meta_estabelecida, status, created_by)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                 $stmt = $db->prepare($query);
                 $result = $stmt->execute([
@@ -305,6 +304,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     $empresaLivre,
                     $companyName,
                     $isProspeccao ? 1 : 0,
+                    $isRetroativa, // Novo campo
                     $input['city_id'],
                     $input['date'],
                     $input['type'],
@@ -331,7 +331,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     }
 
                     if ($isRetroativa) {
-                        $response['warning'] = 'VISITA RETROATIVA CRIADA - Data no passado';
+                        $response['warning'] = '⚠️ VISITA RETROATIVA CRIADA - Data inserida no passado';
                         $response['retroativa'] = true;
                     }
 
@@ -369,7 +369,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 exit;
             }
 
-            // 🔥 NOVA LÓGICA: Verificar se visita existe e se usuário tem permissão (criador OU consultor da empresa)
+            // Verificar se visita existe e se usuário tem permissão (criador OU consultor da empresa)
             $checkQuery = "SELECT v.id, v.created_by, v.status, v.type, v.company_id,
                                   e.consultant, e.consultant_secondary
                            FROM visitas v
@@ -385,7 +385,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 exit;
             }
 
-            // 🔥 VERIFICAR PERMISSÃO: Criador OU consultor principal OU secundário da empresa
+            // Verificar permissão: Criador OU consultor principal OU secundário da empresa
             if ($user['role'] === 'CONSULTOR') {
                 $temPermissao = ($visita['created_by'] == $user['user_id']) ||
                                ($visita['consultant'] == $user['user_id']) ||

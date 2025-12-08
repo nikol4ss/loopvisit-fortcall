@@ -19,7 +19,9 @@
                     Olá, <span id="userName">Usuário</span>
                 </span>
                 <a href="../relatorios.html" id="relatoriosLink" style="display: none;">Relatórios</a>
-                <button id="logoutBtn" class="btn-logout">Sair</button>
+                <button onclick="history.back()" style="padding:8px 12px; border:1px solid #ccc; border-radius:6px; cursor:pointer;">
+                    Voltar
+                </button>
             </div>
         </div>
     </header>
@@ -53,12 +55,11 @@
             <h2>✍️ RESUMO DA VISITA</h2>
 
             <div class="form-group">
-                <label for="summary">RESUMO DA VISITA *</label>
+                <label for="summary">RESUMO DA VISITA </label>
                 <textarea
                     id="summary"
                     name="summary"
                     placeholder="Descreva o que aconteceu durante a visita, principais pontos discutidos, próximos passos..."
-                    required
                 ></textarea>
             </div>
 

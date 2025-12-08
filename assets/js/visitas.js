@@ -1,5 +1,5 @@
 // Armazenamento de motivos persistentes
-let cancelReasons = JSON.parse(localStorage.getItem("cancelReasons") || "{}");
+const cancelReasons = JSON.parse(localStorage.getItem("cancelReasons") || "{}");
 let visitasCache = []; // Armazena dados carregados para exportação
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -90,6 +90,12 @@ const loadVisitas = async () => {
         .replace("ã", "a");
 
       let statusContent = `<span class="status-badge status-${statusClass}">${visita.status_calculado}</span>`;
+
+      // Adicionar badge retroativa se a visita foi criada com data no passado
+      if (visita.is_retroativa == 1) {
+        statusContent += '<span class="retroativa-badge">RETROATIVA</span>';
+      }
+
       if (visita.status === "CANCELADA" && cancelReasons[visita.id]) {
         statusContent += `<br><small class="cancel-motivo">${
           cancelReasons[visita.id]
@@ -220,8 +226,10 @@ const exportarExcel = () => {
     Sequencia: v.visit_sequence,
     Cidade: v.cidade_nome,
     Status: v.status_calculado,
+    Retroativa: v.is_retroativa == 1 ? "SIM" : "NÃO",
   }));
 
+  const XLSX = window.XLSX; // Declare the XLSX variable
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
 

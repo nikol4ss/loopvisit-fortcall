@@ -345,3 +345,35 @@
     margin: 5px 0;
   }
 }
+
+/* Estilos para badge de visita retroativa */
+.badge-retroativa {
+  display: inline-block;
+  background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 6px;
+  box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
+  letter-spacing: 0.5px;
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+
+
+
+/* Versão alternativa sem animação (caso prefira mais sutil) */
+.badge-retroativa-static {
+  display: inline-block;
+  background: #ff6b35;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 6px;
+  box-shadow: 0 2px 4px rgba(255, 107, 53, 0.2);
+  letter-spacing: 0.5px;
+}
