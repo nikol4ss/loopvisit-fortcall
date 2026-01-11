@@ -26,17 +26,17 @@ class Env {
 
 
 // Local
-$_ENV['DB_HOST'] = $_ENV['DB_HOST'] ?? '127.0.0.1';
-$_ENV['DB_NAME'] = $_ENV['DB_NAME'] ?? 'LPV';
-$_ENV['DB_USER'] = $_ENV['DB_USER'] ?? 'root';
-$_ENV['DB_PASS'] = $_ENV['DB_PASS'] ?? '2004';
-$_ENV['JWT_SECRET'] = $_ENV['JWT_SECRET'] ?? 'chave_secreta_sistema_visitas_2024_muito_forte';
-
-// $_ENV['DB_HOST'] = $_ENV['DB_HOST'] ?? 'mysql743.umbler.com';
-// $_ENV['DB_NAME'] = $_ENV['DB_NAME'] ?? 'loopvisit';
-// $_ENV['DB_USER'] = $_ENV['DB_USER'] ?? 'looproot';
-// $_ENV['DB_PASS'] = $_ENV['DB_PASS'] ?? 'vertrigo';
+// $_ENV['DB_HOST'] = $_ENV['DB_HOST'] ?? '127.0.0.1';
+// $_ENV['DB_NAME'] = $_ENV['DB_NAME'] ?? 'LPV';
+// $_ENV['DB_USER'] = $_ENV['DB_USER'] ?? 'root';
+// $_ENV['DB_PASS'] = $_ENV['DB_PASS'] ?? '2004';
 // $_ENV['JWT_SECRET'] = $_ENV['JWT_SECRET'] ?? 'chave_secreta_sistema_visitas_2024_muito_forte';
+
+$_ENV['DB_HOST'] = $_ENV['DB_HOST'] ?? 'mysql743.umbler.com';
+$_ENV['DB_NAME'] = $_ENV['DB_NAME'] ?? 'loopvisit';
+$_ENV['DB_USER'] = $_ENV['DB_USER'] ?? 'looproot';
+$_ENV['DB_PASS'] = $_ENV['DB_PASS'] ?? 'vertrigo';
+$_ENV['JWT_SECRET'] = $_ENV['JWT_SECRET'] ?? 'chave_secreta_sistema_visitas_2024_muito_forte';
 
 
 // Carregar variáveis de ambiente
