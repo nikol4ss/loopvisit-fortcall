@@ -1,9 +1,20 @@
 <?php
+/**
+ * DASHBOARD SEMANAL – API
+ * Responsável por:
+ * - Retornar cards de resumo
+ * - Retornar lista de visitas filtradas
+ * - Aplicar regra de STATUS ATRASADA (AGENDADA + data passada)
+ */
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
+/**
+ * Preflight CORS
+ */
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
@@ -11,6 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once '../config/database.php';
 require_once '../config/jwt.php';
 
+/**
+ * Validação do token
+ */
 $user = JWT::getCurrentUser();
 if (!$user) {
     http_response_code(401);
@@ -18,102 +32,138 @@ if (!$user) {
     exit;
 }
 
-$database = new Database();
-$db = $database->getConnection();
+error_log("DASHBOARD | Usuário autenticado: " . json_encode($user));
+
+/**
+ * Conexão com banco
+ */
+$db = (new Database())->getConnection();
 
 try {
-    $whereClause = "WHERE 1=1";
-    $params = [];
 
+    /**
+     * ==================================================
+     * WHERE BASE
+     * ==================================================
+     */
+    $baseWhere = "WHERE 1=1";
+    $baseParams = [];
+
+    /**
+     * REGRA DE PERFIL
+     */
     if ($user['role'] === 'CONSULTOR') {
-        $whereClause .= " AND v.created_by = :user_id";
-        $params[':user_id'] = $user['user_id'];
+        $baseWhere .= " AND v.created_by = :user_id";
+        $baseParams[':user_id'] = $user['user_id'];
     }
 
-    // Filtros de data
-    if (isset($_GET['data_inicio'])) {
-        $whereClause .= " AND DATE(v.date) >= :data_inicio";
-        $params[':data_inicio'] = $_GET['data_inicio'];
+    /**
+     * FILTROS DE DATA
+     */
+    if (!empty($_GET['data_inicio'])) {
+        $baseWhere .= " AND DATE(v.date) >= :data_inicio";
+        $baseParams[':data_inicio'] = $_GET['data_inicio'];
     }
 
-    if (isset($_GET['data_fim'])) {
-        $whereClause .= " AND DATE(v.date) <= :data_fim";
-        $params[':data_fim'] = $_GET['data_fim'];
+    if (!empty($_GET['data_fim'])) {
+        $baseWhere .= " AND DATE(v.date) <= :data_fim";
+        $baseParams[':data_fim'] = $_GET['data_fim'];
     }
 
-    // Filtro por consultor (para gestores)
-    if (isset($_GET['consultor']) && !empty($_GET['consultor'])) {
-        $whereClause .= " AND v.created_by = :consultor_id";
-        $params[':consultor_id'] = $_GET['consultor'];
-    }
+    /**
+     * ==================================================
+     * LISTAGEM DE VISITAS
+     * ==================================================
+     */
+    if (($_GET['action'] ?? '') === 'visitas') {
 
-    // Filtro por status
-    if (isset($_GET['status']) && !empty($_GET['status'])) {
-        $whereClause .= " AND v.status = :status";
-        $params[':status'] = $_GET['status'];
-    }
+        $whereVisitas = $baseWhere;
+        $paramsVisitas = $baseParams;
 
-    // Se for requisição para visitas detalhadas
-    if (isset($_GET['action']) && $_GET['action'] === 'visitas') {
-        $query = "
-           SELECT
-            v.id,
-            v.date,
-            v.type,
-            v.visit_sequence,
-            v.status,
-            v.objetivo,
-            v.meta_estabelecida,
-            v.is_retroativa,
+        /**
+         * FILTRO DE STATUS (CORRIGIDO)
+         */
+        if (!empty($_GET['status'])) {
 
-            /* REGRA DE EXIBIÇÃO DO NOME */
-            CASE
-                WHEN v.company_id IS NOT NULL AND e.name IS NOT NULL THEN e.name
-                WHEN v.is_prospeccao = 1 AND v.empresa_livre IS NOT NULL THEN v.empresa_livre
-                ELSE 'EMPRESA NÃO REGISTRADA'
-            END AS empresa_nome,
+            switch ($_GET['status']) {
 
-            /* CNPJ – só se tiver empresa */
-            CASE
-                WHEN v.company_id IS NOT NULL THEN e.cnpj
-                ELSE NULL
-            END AS empresa_cnpj,
+                case 'ATRASADA':
+                    $whereVisitas .= "
+                        AND v.status = 'AGENDADA'
+                        AND v.date < NOW()
+                    ";
+                    break;
 
-            e.segment AS empresa_segmento,
-            e.region AS empresa_regiao,
-            e.rating AS empresa_rating,
+                case 'AGENDADA':
+                    $whereVisitas .= "
+                        AND v.status = 'AGENDADA'
+                        AND v.date >= NOW()
+                    ";
+                    break;
 
-            u.name AS consultor_nome,
-            c.created_at AS checkin_data,
-            c.updated_at AS checkin_updated,
-            c.summary AS checkin_summary,
-            c.opportunity AS checkin_opportunity,
+                default:
+                    $whereVisitas .= " AND v.status = :status";
+                    $paramsVisitas[':status'] = $_GET['status'];
+                    break;
+            }
+        }
 
-            CASE
-                WHEN v.status = 'AGENDADA' AND v.date < NOW() THEN 'ATRASADA'
-                ELSE v.status
-            END AS status_calculado
+        $sql = "
+            SELECT
+                v.id,
+                v.date,
+                v.type,
+                v.visit_sequence,
+                v.status,
+                v.objetivo,
+                v.meta_estabelecida,
+                v.is_retroativa,
+                v.is_prospeccao,
+                v.empresa_livre,
 
-        FROM visitas v
-        LEFT JOIN empresas e ON v.company_id = e.id
-        LEFT JOIN usuarios u ON v.created_by = u.id
-        LEFT JOIN checkin c ON v.id = c.visita_id
-        $whereClause
-        ORDER BY v.date DESC
+                CASE
+                    WHEN v.company_id IS NOT NULL AND e.name IS NOT NULL THEN e.name
+                    WHEN v.is_prospeccao = 1 AND v.empresa_livre IS NOT NULL THEN v.empresa_livre
+                    ELSE 'EMPRESA NÃO REGISTRADA'
+                END AS empresa_nome,
+
+                e.cnpj AS empresa_cnpj,
+                e.segment AS empresa_segmento,
+                e.region AS empresa_regiao,
+                e.rating AS empresa_rating,
+
+                u.name AS consultor_nome,
+
+                c.created_at AS checkin_data,
+                c.updated_at AS checkin_updated,
+                c.summary AS checkin_summary,
+                c.opportunity AS checkin_opportunity,
+
+                CASE
+                    WHEN v.status = 'AGENDADA' AND v.date < NOW() THEN 'ATRASADA'
+                    ELSE v.status
+                END AS status_calculado
+
+            FROM visitas v
+            LEFT JOIN empresas e ON v.company_id = e.id
+            LEFT JOIN usuarios u ON v.created_by = u.id
+            LEFT JOIN checkin c ON v.id = c.visita_id
+            $whereVisitas
+            ORDER BY v.date DESC
         ";
 
-        $stmt = $db->prepare($query);
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
-        }
-        $stmt->execute();
+        $stmt = $db->prepare($sql);
+        $stmt->execute($paramsVisitas);
+
         $visitas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Converter para maiúsculo (mesma lógica do visitas.php)
-        foreach ($visitas as &$visita) {
-            foreach ($visita as $key => &$value) {
-                if (is_string($value) && !in_array($key, ['date', 'created_at', 'updated_at', 'checkin_data', 'checkin_updated'])) {
-                    $value = strtoupper($value);
+        /**
+         * Padronização de strings
+         */
+        foreach ($visitas as &$row) {
+            foreach ($row as $k => &$v) {
+                if (is_string($v) && !str_contains($k, 'date')) {
+                    $v = mb_strtoupper($v);
                 }
             }
         }
@@ -125,38 +175,72 @@ try {
         exit;
     }
 
-    // Cards de resumo
+    /**
+     * ==================================================
+     * CARDS DE RESUMO
+     * ==================================================
+     */
     $cards = [];
 
     $statusList = ['AGENDADA', 'REALIZADA', 'REMARCADA', 'CANCELADA'];
-    foreach ($statusList as $status) {
-        $query = "SELECT COUNT(*) as total FROM visitas v $whereClause AND v.status = :status";
-        $stmt = $db->prepare($query);
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
+
+    foreach ($statusList as $st) {
+
+        if ($st === 'AGENDADA') {
+            $sql = "
+                SELECT COUNT(*)
+                FROM visitas v
+                $baseWhere
+                AND v.status = 'AGENDADA'
+                AND v.date >= NOW()
+            ";
+            $stmt = $db->prepare($sql);
+            $stmt->execute($baseParams);
+        } else {
+            $sql = "
+                SELECT COUNT(*)
+                FROM visitas v
+                $baseWhere
+                AND v.status = :status
+            ";
+            $stmt = $db->prepare($sql);
+            $params = $baseParams;
+            $params[':status'] = $st;
+            $stmt->execute($params);
         }
-        $stmt->bindValue(':status', $status);
-        $stmt->execute();
-        $cards[$status] = $stmt->fetch()['total'];
+
+        $cards[$st] = (int) $stmt->fetchColumn();
     }
 
-    // Visitas atrasadas (agendadas com data passada)
-    $atrasadasQuery = "SELECT COUNT(*) as total FROM visitas v $whereClause AND v.status = 'AGENDADA' AND v.date < NOW()";
-    $atrasadasStmt = $db->prepare($atrasadasQuery);
-    foreach ($params as $key => $value) {
-        $atrasadasStmt->bindValue($key, $value);
-    }
-    $atrasadasStmt->execute();
-    $cards['ATRASADAS'] = $atrasadasStmt->fetch()['total'];
+    /**
+     * CARD ATRASADAS
+     */
+    $sqlAtrasadas = "
+        SELECT COUNT(*)
+        FROM visitas v
+        $baseWhere
+        AND v.status = 'AGENDADA'
+        AND v.date < NOW()
+    ";
+
+    $stmt = $db->prepare($sqlAtrasadas);
+    $stmt->execute($baseParams);
+
+    $cards['ATRASADAS'] = (int) $stmt->fetchColumn();
 
     echo json_encode([
         'success' => true,
         'cards' => $cards
     ]);
 
-} catch (Exception $e) {
-    error_log("Erro no dashboard: " . $e->getMessage());
+} catch (Throwable $e) {
+
+    error_log("DASHBOARD | ERRO: " . $e->getMessage());
+
     http_response_code(500);
-    echo json_encode(['error' => 'ERRO AO BUSCAR DADOS DO DASHBOARD: ' . $e->getMessage()]);
+    echo json_encode([
+        'success' => false,
+        'error' => 'ERRO AO BUSCAR DADOS DO DASHBOARD',
+        'details' => $e->getMessage()
+    ]);
 }
-?>
