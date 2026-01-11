@@ -28,18 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return
   }
 
-  // Event listeners
-  const motivoOutrosCheckbox = document.getElementById("motivoOutros")
-  if (motivoOutrosCheckbox) {
-    motivoOutrosCheckbox.addEventListener("change", function () {
-      const descricaoDiv = document.getElementById("motivoOutrosDescricao")
-      descricaoDiv.style.display = this.checked ? "block" : "none"
-
-      if (!this.checked) {
-        document.getElementById("motivoOutrosTexto").value = ""
-      }
-    })
-  }
+  setupMotivosEventListeners()
 
   checkinData = {}
   visitaData = {}
@@ -202,9 +191,12 @@ const populateFormFields = () => {
     }
 
     if (checkinData.motivo_outros_texto) {
-      document.getElementById("motivoOutros").checked = true
-      document.getElementById("motivoOutrosDescricao").style.display = "block"
-      document.getElementById("motivoOutrosTexto").value = checkinData.motivo_outros_texto
+      const motivoOutrosCheckbox = document.getElementById("motivoOutros")
+      if (motivoOutrosCheckbox) {
+        motivoOutrosCheckbox.checked = true
+        document.getElementById("motivoOutrosDescricao").style.display = "block"
+        document.getElementById("motivoOutrosTexto").value = checkinData.motivo_outros_texto
+      }
     }
 
     if (checkinData.propriedade) {
@@ -297,6 +289,7 @@ const setEditMode = () => {
     readonlyActions.classList.add("hidden")
   }
 
+  setupMotivosEventListeners()
   setupFileUpload()
   setupTermometro()
 }
@@ -306,8 +299,13 @@ const setupTermometro = () => {
   const termometroValue = document.getElementById("termometroValue")
 
   if (termometroSlider && termometroValue) {
+    const currentValue = termometroSlider.value
+
     const newSlider = termometroSlider.cloneNode(true)
+    newSlider.value = currentValue
     termometroSlider.parentNode.replaceChild(newSlider, termometroSlider)
+
+    termometroValue.textContent = currentValue
 
     newSlider.addEventListener("input", function () {
       termometroValue.textContent = this.value
@@ -780,4 +778,25 @@ const baixarAnexo = async () => {
 const addFinalizadoBadge = () => {
   // Define the function here if needed
   console.log("Finalizado badge added")
+}
+
+const setupMotivosEventListeners = () => {
+  const motivoOutrosCheckbox = document.getElementById("motivoOutros")
+  if (motivoOutrosCheckbox) {
+    // Remover event listener antigo clonando o elemento
+    const newCheckbox = motivoOutrosCheckbox.cloneNode(true)
+    motivoOutrosCheckbox.parentNode.replaceChild(newCheckbox, motivoOutrosCheckbox)
+
+    // Adicionar novo event listener
+    newCheckbox.addEventListener("change", function () {
+      const descricaoDiv = document.getElementById("motivoOutrosDescricao")
+      descricaoDiv.style.display = this.checked ? "block" : "none"
+
+      if (!this.checked) {
+        document.getElementById("motivoOutrosTexto").value = ""
+      }
+    })
+
+    console.log("[v0] Event listener de 'Outros' configurado")
+  }
 }
