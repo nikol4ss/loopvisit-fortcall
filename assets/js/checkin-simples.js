@@ -797,6 +797,6 @@ const setupMotivosEventListeners = () => {
       }
     })
 
-    console.log("[v0] Event listener de 'Outros' configurado")
+    console.log("[v0] Event listener de 'Outros' configurados, ao criar")
   }
 }
